@@ -31,7 +31,7 @@ export default function NosotrosPage() {
     }
 
     // Start the interval
-    timerRef.current = setInterval(autoplayCarousel, 2000) // 2000ms = 2 seconds
+    timerRef.current = setInterval(autoplayCarousel, 1000) // 1000ms = 1 seconds
 
     // Cleanup function to clear the interval when component unmounts
     return () => {
@@ -291,9 +291,10 @@ export default function NosotrosPage() {
             </p>
           </div>
 
-          {/* Carrusel con todos los médicos y autoplay */}
+          {/* Carrusel con todos los médicos, autoplay y modo infinito */}
           <Carousel
             className="max-w-6xl mx-auto"
+            loop={true}
             onMouseEnter={() => {
               if (timerRef.current) {
                 clearInterval(timerRef.current)
@@ -307,7 +308,7 @@ export default function NosotrosPage() {
                 if (apiRef.current) {
                   apiRef.current.scrollNext()
                 }
-              }, 2000)
+              }, 1000)
             }}
             setApi={(api) => {
               apiRef.current = api
