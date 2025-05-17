@@ -1,14 +1,46 @@
+"use client"
+
 import Image from "next/image"
+import { useEffect, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, Award, Users, Heart } from "lucide-react"
-import {Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious} from "@/components/ui/carousel"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  CarouselApi
+} from "@/components/ui/carousel"
 
-export const metadata = {
-  title: "Nosotros - Cardionova",
-  description: "Conoce a nuestro equipo médico especializado en cardiología y nuestra historia.",
-}
+// Los metadatos deben definirse en un archivo separado o en layout.js
+// ya que no pueden exportarse desde componentes cliente
 
 export default function NosotrosPage() {
+  // Add state for the carousel API
+  const apiRef = useRef(null)
+  const timerRef = useRef(null)
+
+  // Setup the autoplay functionality
+  useEffect(() => {
+    // Function to move to the next slide
+    const autoplayCarousel = () => {
+      if (apiRef.current) {
+        apiRef.current.scrollNext()
+      }
+    }
+
+    // Start the interval
+    timerRef.current = setInterval(autoplayCarousel, 2000) // 2000ms = 2 seconds
+
+    // Cleanup function to clear the interval when component unmounts
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+    }
+  }, [])
+
   const doctors = [
     {
       name: "Dra. María Rodríguez",
@@ -259,8 +291,28 @@ export default function NosotrosPage() {
             </p>
           </div>
 
-          {/* Carrusel con todos los médicos */}
-          <Carousel className="max-w-6xl mx-auto">
+          {/* Carrusel con todos los médicos y autoplay */}
+          <Carousel
+            className="max-w-6xl mx-auto"
+            onMouseEnter={() => {
+              if (timerRef.current) {
+                clearInterval(timerRef.current)
+              }
+            }}
+            onMouseLeave={() => {
+              if (timerRef.current) {
+                clearInterval(timerRef.current)
+              }
+              timerRef.current = setInterval(() => {
+                if (apiRef.current) {
+                  apiRef.current.scrollNext()
+                }
+              }, 2000)
+            }}
+            setApi={(api) => {
+              apiRef.current = api
+            }}
+          >
             <CarouselContent className="-ml-4">
               {carouselDoctors.map((doctor, index) => (
                 <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3 p-2">
