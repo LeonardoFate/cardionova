@@ -1,6 +1,7 @@
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { CheckCircle, Award, Users, Heart } from "lucide-react"
+import {Carousel,CarouselContent,CarouselItem,CarouselNext,CarouselPrevious} from "@/components/ui/carousel"
 
 export const metadata = {
   title: "Nosotros - Cardionova",
@@ -42,7 +43,42 @@ export default function NosotrosPage() {
       education: "Universidad Metropolitana de Medicina",
       certifications: ["Certificado en Ecocardiografía Avanzada", "Miembro de la Sociedad de Imagen Cardíaca"],
     },
+     {
+    name: "Dr. Roberto Sánchez",
+    specialty: "Cardiología Pediátrica",
+    image: "/placeholder.svg?height=300&width=300",
+    description: "Especialista en cardiopatías congénitas y adquiridas en niños y adolescentes.",
+    education: "Universidad de Medicina Pediátrica",
+    certifications: ["Especialista en Cardiología Pediátrica", "Miembro de la Sociedad de Cardiología Pediátrica"],
+  },
+  {
+    name: "Dra. Luisa Martínez",
+    specialty: "Cardiología Deportiva",
+    image: "/placeholder.svg?height=300&width=300",
+    description: "Experta en evaluación y tratamiento de deportistas de alto rendimiento.",
+    education: "Instituto de Medicina del Deporte",
+    certifications: ["Diplomado en Medicina Deportiva", "Miembro de la Sociedad de Cardiología Deportiva"],
+  },
+  {
+    name: "Dr. Eduardo Ramírez",
+    specialty: "Rehabilitación Cardíaca",
+    image: "/placeholder.svg?height=300&width=300",
+    description: "Especializado en programas de rehabilitación post-infarto y cirugía cardiovascular.",
+    education: "Universidad Central de Ciencias Médicas",
+    certifications: ["Especialista en Rehabilitación Cardíaca", "Doctor en Medicina Cardiovascular"],
+  },
+  {
+    name: "Dra. Patricia Vega",
+    specialty: "Cardio-Oncología",
+    image: "/placeholder.svg?height=300&width=300",
+    description: "Especialista en cuidado cardiovascular de pacientes oncológicos.",
+    education: "Universidad Internacional de Medicina",
+    certifications: ["Fellowship en Cardio-Oncología", "Miembro de la Sociedad de Cardio-Oncología"],
+  }
   ]
+
+  // Todos los médicos irán en el carrusel
+  const carouselDoctors = doctors
 
   const milestones = [
     {
@@ -71,6 +107,36 @@ export default function NosotrosPage() {
       description: "Implementación de las últimas tecnologías en diagnóstico y tratamiento cardiovascular.",
     },
   ]
+
+  // Función para renderizar la tarjeta de doctor
+  const renderDoctorCard = (doctor, index) => (
+    <Card key={index} className="overflow-hidden border-gray-200 transition-all hover:shadow-md h-full">
+      <div className="aspect-square relative">
+        <Image src={doctor.image || "/placeholder.svg"} alt={doctor.name} fill className="object-cover" />
+      </div>
+      <CardContent className="p-6">
+        <h4 className="text-2xl font-bold text-cardionova-blue">{doctor.name}</h4>
+        <p className="text-cardionova-red font-medium mb-4 text-lg">{doctor.specialty}</p>
+        <p className="text-gray-700 mb-4 text-base">{doctor.description}</p>
+        <div className="pt-4 border-t border-gray-200">
+          <p className="text-base text-gray-600 mb-2">
+            <span className="font-medium">Formación:</span> {doctor.education}
+          </p>
+          <div className="text-base text-gray-600">
+            <span className="font-medium">Certificaciones:</span>
+            <ul className="mt-2 space-y-2">
+              {doctor.certifications.map((cert, i) => (
+                <li key={i} className="flex items-start">
+                  <span className="text-cardionova-red mr-2 text-xs">•</span>
+                  <span>{cert}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
 
   return (
     <div className="bg-white">
@@ -182,7 +248,7 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* Equipo Médico */}
+      {/* Equipo Médico en Carrusel */}
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -193,36 +259,20 @@ export default function NosotrosPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {doctors.map((doctor, index) => (
-              <Card key={index} className="overflow-hidden border-gray-200 transition-all hover:shadow-md">
-                <div className="aspect-square relative">
-                  <Image src={doctor.image || "/placeholder.svg"} alt={doctor.name} fill className="object-cover" />
-                </div>
-                <CardContent className="p-6">
-                  <h4 className="text-xl font-bold text-cardionova-blue">{doctor.name}</h4>
-                  <p className="text-cardionova-red font-medium mb-3">{doctor.specialty}</p>
-                  <p className="text-gray-700 mb-3">{doctor.description}</p>
-                  <div className="pt-3 border-t border-gray-200">
-                    <p className="text-sm text-gray-600 mb-1">
-                      <span className="font-medium">Formación:</span> {doctor.education}
-                    </p>
-                    <div className="text-sm text-gray-600">
-                      <span className="font-medium">Certificaciones:</span>
-                      <ul className="mt-1 space-y-1">
-                        {doctor.certifications.map((cert, i) => (
-                          <li key={i} className="flex items-start">
-                            <span className="text-cardionova-red mr-2 text-xs">•</span>
-                            <span>{cert}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Carrusel con todos los médicos */}
+          <Carousel className="max-w-6xl mx-auto">
+            <CarouselContent className="-ml-4">
+              {carouselDoctors.map((doctor, index) => (
+                <CarouselItem key={index} className="pl-4 md:basis-1/2 lg:basis-1/3 p-2">
+                  {renderDoctorCard(doctor, index)}
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-center mt-8">
+              <CarouselPrevious className="relative mr-6" />
+              <CarouselNext className="relative ml-6" />
+            </div>
+          </Carousel>
         </div>
       </section>
 
