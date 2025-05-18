@@ -1,7 +1,7 @@
 // components/auth/LoginForm.tsx
 
 'use client'
-
+import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -75,7 +75,22 @@ export function LoginForm() {
             </p>
           </div>
         </div>
-
+        <div className="text-center mb-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-sm text-blue-800">
+            <strong>¿No eres personal médico?</strong>
+            </p>
+            <p className="text-sm text-blue-600 mt-1">
+            <Link href="/" className="hover:underline font-medium">
+                Volver a la página principal
+            </Link>
+            {' '}o{' '}
+            <Link href="/contacto" className="hover:underline font-medium">
+                agenda tu cita como paciente
+            </Link>
+            </p>
+        </div>
+        </div>
         <Card className="border-gray-200">
           <CardHeader className="space-y-1">
             <div className="flex justify-center mb-2">
@@ -188,7 +203,7 @@ export function LoginForm() {
           </form>
         </Card>
 
-        {/* Información para desarrollo */}
+        {/* Información para desarrollo
         {process.env.NODE_ENV === 'development' && (
           <div className="mt-8 p-4 bg-gray-50 rounded-lg border">
             <h3 className="font-medium text-gray-700 mb-2">
@@ -198,9 +213,12 @@ export function LoginForm() {
               <p><strong>Admin:</strong> admin@cardionova.com / Admin123!</p>
               <p><strong>Secretaria:</strong> secretaria@cardionova.com / Secretaria123!</p>
               <p><strong>Médico:</strong> dr.rodriguez@cardionova.com / Doctor123!</p>
+
             </div>
           </div>
-        )}
+
+        )} */}
+
       </div>
     </div>
 
