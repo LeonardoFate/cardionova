@@ -1,4 +1,7 @@
 import mongoose from 'mongoose'
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local' });
+
 
 const MONGODB_URI: string = process.env.MONGODB_URI!
 
@@ -52,12 +55,6 @@ async function dbConnect(): Promise<typeof mongoose> {
   return cached.conn
 }
 
-export async function dbDisconnect(): Promise<void> {
-  if (cached.conn) {
-    await cached.conn.disconnect()
-    cached.conn = null
-    cached.promise = null
-  }
-}
+
 
 export default dbConnect

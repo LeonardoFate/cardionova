@@ -1,0 +1,24 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: cardionova-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      # Sin autenticación para desarrollo local
+      MONGO_INITDB_DATABASE: cardionova
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - cardionova-network
+
+# Definición de volúmenes
+volumes:
+  mongodb_data:
+    driver: local
+
+# Definición de redes
+networks:
+  cardionova-network:
+    driver: bridge
