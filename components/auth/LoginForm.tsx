@@ -151,7 +151,7 @@ export function LoginForm() {
                     className="text-sm text-[#e11d48] hover:underline"
                     onClick={() => {
                       // TODO: Implement forgot password
-                      alert('Función próximamente disponible')
+                      alert('Contactate con el administrado para recuperar tu contrasenia')
                     }}
                   >
                     ¿Olvidó su contraseña?

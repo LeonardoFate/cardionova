@@ -122,7 +122,7 @@ export default function DashboardPage() {
               )}
               {user.profile.licenseNumber && (
                 <div>
-                  <p className="text-sm text-gray-500">Número de Licencia</p>
+                  <p className="text-sm text-gray-500">Número de Senecyt</p>
                   <p className="font-medium">{user.profile.licenseNumber}</p>
                 </div>
               )}
@@ -209,7 +209,7 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-4 w-4" />
-                    <span>Historiales Médicos</span>
+                    <span>Historia Clinica</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
