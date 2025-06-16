@@ -26,7 +26,7 @@ export default function AccesoMedicosLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       <DashboardNavbar />
-      <main>{children}</main>
+      <main className="pt-16">{children}</main>
     </div>
   )
 }

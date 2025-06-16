@@ -94,18 +94,43 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  // Función de logout
+  // Función de logout simplificada y efectiva
   const logout = async () => {
+    console.log('🚪 Iniciando logout...')
+
     try {
-      await fetch('/api/auth/logout', {
+      // 1. Limpiar estado inmediatamente
+      setUser(null)
+      console.log('✅ Estado de usuario limpiado')
+
+      // 2. Llamar al endpoint de logout
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
       })
+
+      if (response.ok) {
+        console.log('✅ Logout exitoso en servidor')
+      } else {
+        console.log('⚠️ Error en logout del servidor, pero continuando...')
+      }
+
     } catch (error) {
-      console.error('Error en logout:', error)
-    } finally {
-      setUser(null)
+      console.error('❌ Error en logout:', error)
     }
+
+    // 3. Limpiar storage del navegador
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.clear()
+        sessionStorage.clear()
+        console.log('✅ Storage limpiado')
+      } catch (e) {
+        console.log('⚠️ Error limpiando storage')
+      }
+    }
+
+    console.log('🔄 Logout completado, usuario debe estar en null:', user)
   }
 
   // Verificar autenticación al montar el componente

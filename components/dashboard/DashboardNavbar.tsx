@@ -2,37 +2,28 @@
 
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {
-  Menu,
-  User,
-  LogOut,
-  ChevronDown,
-  Home,
-  Calendar,
-  FileText,
-  Users,
-  BarChart3,
-  Settings
-} from 'lucide-react'
+import { Heart, User, LogOut, ChevronDown } from 'lucide-react'
 
 export function DashboardNavbar() {
   const { user, logout } = useAuth()
   const router = useRouter()
 
   const handleLogout = async () => {
+    console.log('🚪 Botón logout presionado')
     await logout()
+    console.log('🔄 Logout completado, redirigiendo...')
+    // Redirección manual después del logout
     router.push('/acceso-medicos')
   }
 
@@ -58,141 +49,101 @@ export function DashboardNavbar() {
     }
   }
 
-  // Navegación basada en roles
-  const getNavigationItems = () => {
-    const baseItems = [
-      { name: 'Dashboard', href: '/acceso-medicos/dashboard', icon: Home }
-    ]
-
-    if (user?.role === 'ADMIN') {
-      return [
-        ...baseItems,
-        { name: 'Usuarios', href: '/acceso-medicos/dashboard/usuarios', icon: Users },
-        { name: 'Reportes', href: '/acceso-medicos/dashboard/reportes', icon: BarChart3 }
-      ]
-    }
-
-    if (user?.role === 'SECRETARIA') {
-      return [
-        ...baseItems,
-        { name: 'Citas', href: '/acceso-medicos/dashboard/citas', icon: Calendar },
-        { name: 'Pacientes', href: '/acceso-medicos/dashboard/pacientes', icon: Users }
-      ]
-    }
-
-    if (user?.role === 'MEDICO') {
-      return [
-        ...baseItems,
-        { name: 'Mis Citas', href: '/acceso-medicos/dashboard/mis-citas', icon: Calendar },
-        { name: 'Historiales', href: '/acceso-medicos/dashboard/historiales', icon: FileText }
-      ]
-    }
-
-    return baseItems
-  }
-
-  const navigationItems = getNavigationItems()
+  if (!user) return null
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/acceso-medicos/dashboard" className="flex items-center space-x-2">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-[#1e3a8a] rounded flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C</span>
-              </div>
-              <span className="font-bold text-[#1e3a8a] text-lg">
-                Cardionova
-              </span>
-              <span className="text-xs bg-gray-100 px-2 py-1 rounded-full text-gray-600">
-                Panel Médico
-              </span>
+        <div className="flex items-center justify-between h-16">
+          {/* Logo y título */}
+          <Link href="/acceso-medicos/dashboard" className="flex items-center space-x-3">
+            <div className="bg-[#1e3a8a] p-2 rounded-lg">
+              <Heart className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-[#1e3a8a]">Cardionova</h1>
+              <p className="text-xs text-gray-500">Panel Médico</p>
             </div>
           </Link>
 
-          {/* Navegación Desktop */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navigationItems.map((item) => {
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-[#1e3a8a] transition-colors"
-                >
-                  <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
-                </Link>
-              )
-            })}
-          </nav>
+          {/* Menú de navegación */}
+          <div className="flex items-center space-x-6">
+            <Link
+              href="/acceso-medicos/dashboard"
+              className="text-gray-600 hover:text-[#1e3a8a] transition-colors"
+            >
+              Dashboard
+            </Link>
 
-          {/* Usuario y opciones */}
-          <div className="flex items-center space-x-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 h-auto p-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                      <User className="h-4 w-4 text-gray-600" />
-                    </div>
-                    <div className="text-left hidden sm:block">
-                      <p className="text-sm font-medium text-gray-700">
-                        {user?.firstName} {user?.lastName}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {user?.role && getRoleDisplayName(user.role)}
-                      </p>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-gray-500" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="flex items-center space-x-2 p-2">
-                  <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-gray-600" />
-                  </div>
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium">
-                      {user?.firstName} {user?.lastName}
-                    </p>
-                    <div className="flex items-center space-x-2">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${user?.role ? getRoleColor(user.role) : ''}`}>
-                        {user?.role && getRoleDisplayName(user.role)}
-                      </span>
-                    </div>
-                    <p className="text-xs text-gray-500">{user?.email}</p>
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/acceso-medicos/dashboard/perfil" className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    Mi Perfil
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/acceso-medicos/dashboard/configuracion" className="cursor-pointer">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Configuración
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleLogout}
-                  className="cursor-pointer text-red-600 focus:text-red-600"
+            {user.role === 'ADMIN' && (
+              <>
+                <Link
+                  href="/acceso-medicos/dashboard/usuarios"
+                  className="text-gray-600 hover:text-[#1e3a8a] transition-colors"
                 >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Cerrar Sesión
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  Usuarios
+                </Link>
+                <Link
+                  href="/acceso-medicos/dashboard/reportes"
+                  className="text-gray-600 hover:text-[#1e3a8a] transition-colors"
+                >
+                  Reportes
+                </Link>
+              </>
+            )}
+
+            {user.role === 'SECRETARIA' && (
+              <>
+                <span className="text-gray-600 hover:text-[#1e3a8a] transition-colors cursor-pointer">
+                  Citas
+                </span>
+                <span className="text-gray-600 hover:text-[#1e3a8a] transition-colors cursor-pointer">
+                  Pacientes
+                </span>
+              </>
+            )}
+
+            {user.role === 'MEDICO' && (
+              <>
+                <span className="text-gray-600 hover:text-[#1e3a8a] transition-colors cursor-pointer">
+                  Mis Citas
+                </span>
+                <span className="text-gray-600 hover:text-[#1e3a8a] transition-colors cursor-pointer">
+                  Historiales
+                </span>
+              </>
+            )}
           </div>
+
+          {/* Menú de usuario */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="flex items-center space-x-2">
+                <div className="text-right">
+                  <p className="text-sm font-medium text-gray-900">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className={`text-xs px-2 py-1 rounded-full ${getRoleColor(user.role)}`}>
+                    {getRoleDisplayName(user.role)}
+                  </p>
+                </div>
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                <span>Mi Perfil</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Cerrar Sesión</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-    </header>
+    </nav>
   )
 }

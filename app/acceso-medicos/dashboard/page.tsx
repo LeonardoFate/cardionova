@@ -5,9 +5,10 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { LogOut, User, Calendar, FileText } from 'lucide-react'
+import { LogOut, User, Calendar, FileText, Users, BarChart3 } from 'lucide-react'
 
 export default function DashboardPage() {
   const { user, isLoading, isAuthenticated, logout } = useAuth()
@@ -136,18 +137,26 @@ export default function DashboardPage() {
             <>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Gestión de Usuarios</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>Gestión de Usuarios</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
                     Administrar médicos, secretarias y otros usuarios del sistema.
                   </p>
-                  <Button className="w-full">Gestionar Usuarios</Button>
+                  <Link href="/acceso-medicos/dashboard/usuarios">
+                    <Button className="w-full">Gestionar Usuarios</Button>
+                  </Link>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Reportes</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <BarChart3 className="h-4 w-4" />
+                    <span>Reportes</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
@@ -177,7 +186,10 @@ export default function DashboardPage() {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Pacientes</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Users className="h-4 w-4" />
+                    <span>Pacientes</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
@@ -225,7 +237,10 @@ export default function DashboardPage() {
           {/* Card común para todos los roles */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Mi Perfil</CardTitle>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="h-4 w-4" />
+                <span>Mi Perfil</span>
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600 mb-4">

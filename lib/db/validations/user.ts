@@ -1,4 +1,4 @@
-// lib/validations/user.ts
+// lib/db/validations/user.ts
 
 import { z } from 'zod'
 import { UserRole } from '@/types/user'
@@ -140,7 +140,7 @@ export const validateMedicoProfile = (data: any) => {
   return { success: true }
 }
 
-// Esquema para parámetros de consulta (lista de usuarios)
+// Esquema para parámetros de consulta (lista de usuarios) - ✅ CORREGIDO
 export const userQuerySchema = z.object({
   page: z
     .string()
@@ -166,7 +166,12 @@ export const userQuerySchema = z.object({
   isActive: z
     .string()
     .optional()
-    .transform((val) => val === 'true')
+    .transform((val) => {
+      // ✅ FIX: Solo transformar si el valor existe y es válido
+      if (val === 'true') return true
+      if (val === 'false') return false
+      return undefined // No aplicar filtro si no se especifica
+    })
 })
 
 // Tipos TypeScript derivados de los esquemas
