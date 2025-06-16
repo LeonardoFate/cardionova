@@ -2,7 +2,29 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react"
+import { usePathname } from 'next/navigation'
+import { SmoothNavbar } from '@/components/SmoothNavbar'
+import { Footer } from '@/components/footer'
+import { PageTransition } from '@/components/PageTransition'
 
+export function ConditionalLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
+  const isAuthRoute = pathname?.startsWith('/acceso-medicos')
+
+  if (isAuthRoute) {
+    return <PageTransition>{children}</PageTransition>
+  }
+
+  return (
+    <>
+      <SmoothNavbar />
+      <PageTransition>
+        <main>{children}</main>
+      </PageTransition>
+      <Footer />
+    </>
+  )
+}
 export function Contact() {
   return (
     <section className="w-full py-12 md:py-24 lg:py-32 bg-white">
@@ -115,4 +137,5 @@ export function Contact() {
       </div>
     </section>
   )
+
 }

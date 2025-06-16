@@ -92,3 +92,75 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.smooth-enter {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+}
+
+.smooth-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: all 300ms ease-out;
+}
+
+.smooth-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.smooth-exit-active {
+  opacity: 0;
+  transform: translateY(-10px) scale(1.02);
+  transition: all 250ms ease-in;
+}
+
+/* Transición suave para elementos de página */
+.page-content {
+  animation: pageEnter 400ms ease-out;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Transición para enlaces */
+.nav-link {
+  position: relative;
+  transition: all 200ms ease-out;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 50%;
+  background: var(--cardionova-red);
+  transition: all 200ms ease-out;
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Hover suave para cards */
+.card-hover {
+  transition: all 300ms ease-out;
+  will-change: transform, box-shadow;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
