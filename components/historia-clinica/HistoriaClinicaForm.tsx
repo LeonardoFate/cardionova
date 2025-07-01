@@ -1,4 +1,4 @@
-// components/historia-clinica/HistoriaClinicaForm.tsx
+// components/historia-clinica/HistoriaClinicaForm.tsx - VERSIÓN CORREGIDA
 
 'use client'
 
@@ -23,7 +23,50 @@ import {
   MEDICAMENTOS_COMUNES
 } from '@/types/historia-clinica'
 import { useHistoriaClinica } from '@/hooks/useHistoriaClinica'
-import { createHistoriaClinicaSchema } from '@/lib/db/validations/historia-clinica'
+
+// ✅ Esquema simplificado para debugging
+const createHistoriaClinicaSchema = z.object({
+  paciente: z.object({
+    nombre: z.string().min(1, 'Nombre requerido'),
+    cedula: z.string().min(1, 'Cédula requerida'),
+    tipoSeguro: z.string().min(1, 'Tipo de seguro requerido')
+  }),
+  fecha: z.string().min(1, 'Fecha requerida'),
+  datosBiometricos: z.object({
+    edad: z.number().min(1, 'Edad requerida'),
+    peso: z.number().min(1, 'Peso requerido'),
+    estatura: z.number().min(1, 'Estatura requerida')
+  }),
+  signosVitales: z.object({
+    presionArterial: z.string().min(1, 'Presión arterial requerida'),
+    frecuenciaCardiaca: z.number().min(30, 'Frecuencia cardíaca requerida'),
+    satO2: z.number().min(50, 'Saturación requerida'),
+    temperatura: z.number().min(30, 'Temperatura requerida')
+  }),
+  motivoConsulta: z.string().min(1, 'Motivo de consulta requerido'),
+  cie10: z.string().min(1, 'CIE-10 requerido'),
+  enfermedadActual: z.string().min(1, 'Enfermedad actual requerida'),
+  evolucionEnfermedad: z.string().min(1, 'Evolución de enfermedad requerida'),
+  plan: z.object({
+    dieta: z.string().min(1, 'Dieta requerida'),
+    actividadFisica: z.string().min(1, 'Actividad física requerida'),
+    pautasAlarma: z.string().min(1, 'Pautas de alarma requeridas')
+  }),
+  // Campos opcionales con defaults
+  antecedentesPersonales: z.object({
+    factoresRiesgoCardiovascular: z.array(z.string()).default([]),
+    antecedentesCardiovasculares: z.string().default(''),
+    antecedentesPatologicosPersonales: z.string().default(''),
+    antecedentesQuirurgicos: z.string().default(''),
+    medicacion: z.array(z.string()).default([]),
+    alergias: z.string().default(''),
+    antecedentesPatologicosFamiliares: z.string().default('')
+  }).default({}),
+  tratamiento: z.object({
+    medicamentos: z.array(z.string()).default([]),
+    observaciones: z.string().default('')
+  }).default({})
+})
 
 type HistoriaFormData = z.infer<typeof createHistoriaClinicaSchema>
 
@@ -35,6 +78,7 @@ interface HistoriaClinicaFormProps {
 
 export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaClinicaFormProps) {
   const [showCalculadoraIMC, setShowCalculadoraIMC] = useState(false)
+  const [debugInfo, setDebugInfo] = useState<any>(null) // ✅ Para debugging
   const { createHistoria, updateHistoria, isLoading, error, clearError, calcularIMC } = useHistoriaClinica()
 
   const isEditing = !!historia
@@ -47,7 +91,9 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
         cedula: historia?.paciente.cedula || '',
         tipoSeguro: historia?.paciente.tipoSeguro || ''
       },
-      fecha: historia?.fecha ? new Date(historia.fecha).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+      fecha: historia?.fecha
+        ? new Date(historia.fecha).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0],
       datosBiometricos: {
         edad: historia?.datosBiometricos.edad || 0,
         peso: historia?.datosBiometricos.peso || 0,
@@ -63,6 +109,11 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
       cie10: historia?.cie10 || '',
       enfermedadActual: historia?.enfermedadActual || '',
       evolucionEnfermedad: historia?.evolucionEnfermedad || '',
+      plan: {
+        dieta: historia?.plan.dieta || '',
+        actividadFisica: historia?.plan.actividadFisica || '',
+        pautasAlarma: historia?.plan.pautasAlarma || ''
+      },
       antecedentesPersonales: {
         factoresRiesgoCardiovascular: historia?.antecedentesPersonales.factoresRiesgoCardiovascular || [],
         antecedentesCardiovasculares: historia?.antecedentesPersonales.antecedentesCardiovasculares || '',
@@ -72,39 +123,6 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
         alergias: historia?.antecedentesPersonales.alergias || '',
         antecedentesPatologicosFamiliares: historia?.antecedentesPersonales.antecedentesPatologicosFamiliares || ''
       },
-      examenSistemas: {
-        pielFaneras: historia?.examenSistemas.pielFaneras || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaRespiratorio: historia?.examenSistemas.sistemaRespiratorio || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaCardiovascular: historia?.examenSistemas.sistemaCardiovascular || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaGastrointestinal: historia?.examenSistemas.sistemaGastrointestinal || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaGenitourinario: historia?.examenSistemas.sistemaGenitourinario || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaMusculoesqueletico: historia?.examenSistemas.sistemaMusculoesqueletico || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaEndocrino: historia?.examenSistemas.sistemaEndocrino || 'NADA QUE LLAME LA ATENCIÓN',
-        sistemaNeurologico: historia?.examenSistemas.sistemaNeurologico || 'NADA QUE LLAME LA ATENCIÓN'
-      },
-      examenFisico: {
-        inspeccionGeneral: historia?.examenFisico.inspeccionGeneral || 'PACIENTE ORIENTADO EN TIEMPO Y ESPACIO, COLABORA CON EL INTERROGATORIO',
-        escalaGlasgow: historia?.examenFisico.escalaGlasgow || '15/15',
-        cuello: historia?.examenFisico.cuello || 'MOVIL - NO ADENOPATIAS PALPABLES - YUGULAR 0/3',
-        torax: historia?.examenFisico.torax || 'SIMETRICO',
-        corazon: historia?.examenFisico.corazon || 'RUIDOS CARDIACOS RITMICOS, NO SOPLOS, NO RUIDOS AGREGADOS',
-        pulmones: historia?.examenFisico.pulmones || 'CLAROS Y VENTILADOS',
-        abdomen: historia?.examenFisico.abdomen || 'BLANDO DEPRESIBLE NO DOLOROSO, NO MASAS RUIDOS HIDROAEREOS PRESENTES',
-        extremidadesSuperiores: historia?.examenFisico.extremidadesSuperiores || 'SIMETRICAS - MOVILES - NO DOLOROSOS - PULSOS PRESENTES',
-        extremidadesInferiores: historia?.examenFisico.extremidadesInferiores || 'SIMETRICAS - MOVILES - NO DOLOROSOS - PULSOS PRESENTES - NO EDEMA'
-      },
-      estudiosRealizados: {
-        estudios: historia?.estudiosRealizados.estudios || [],
-        conclusiones: historia?.estudiosRealizados.conclusiones || ''
-      },
-      plan: {
-        tiempoControl: historia?.plan.tiempoControl ? new Date(historia.plan.tiempoControl).toISOString().split('T')[0] : undefined,
-        dieta: historia?.plan.dieta || '',
-        actividadFisica: historia?.plan.actividadFisica || '',
-        pautasAlarma: historia?.plan.pautasAlarma || '',
-        reposo: historia?.plan.reposo || '',
-        estudiosAdicionales: historia?.plan.estudiosAdicionales || []
-      },
       tratamiento: {
         medicamentos: historia?.tratamiento.medicamentos || [],
         observaciones: historia?.tratamiento.observaciones || ''
@@ -112,33 +130,7 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
     }
   })
 
-  const { register, handleSubmit, watch, setValue, control, formState: { errors } } = form
-
-  // Field arrays para listas dinámicas
-  const { fields: factoresRiesgo, append: appendFactor, remove: removeFactor } = useFieldArray({
-    control,
-    name: 'antecedentesPersonales.factoresRiesgoCardiovascular'
-  })
-
-  const { fields: medicacionHabitual, append: appendMedicacion, remove: removeMedicacion } = useFieldArray({
-    control,
-    name: 'antecedentesPersonales.medicacion'
-  })
-
-  const { fields: estudios, append: appendEstudio, remove: removeEstudio } = useFieldArray({
-    control,
-    name: 'estudiosRealizados.estudios'
-  })
-
-  const { fields: estudiosAdicionales, append: appendEstudioAdicional, remove: removeEstudioAdicional } = useFieldArray({
-    control,
-    name: 'plan.estudiosAdicionales'
-  })
-
-  const { fields: medicamentosTratamiento, append: appendMedicamentoTratamiento, remove: removeMedicamentoTratamiento } = useFieldArray({
-    control,
-    name: 'tratamiento.medicamentos'
-  })
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = form
 
   // Watch para calcular IMC automáticamente
   const peso = watch('datosBiometricos.peso')
@@ -147,38 +139,83 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
   useEffect(() => {
     if (peso && estatura && peso > 0 && estatura > 0) {
       const imc = calcularIMC(peso, estatura)
-      setValue('datosBiometricos.imc' as any, imc)
+      console.log('🧮 IMC calculado:', imc)
     }
-  }, [peso, estatura, calcularIMC, setValue])
+  }, [peso, estatura, calcularIMC])
 
   // Limpiar errores al montar
   useEffect(() => {
     clearError()
   }, [clearError])
 
+  // ✅ Función de submit con debugging mejorado
   const onSubmit = async (data: HistoriaFormData) => {
+    console.log('📝 Datos del formulario:', data)
+    console.log('⚙️ Errores de validación:', errors)
+
     try {
       clearError()
+      setDebugInfo({ step: 'Iniciando envío...', data })
+
+      // ✅ Transformar datos para el API
+      const transformedData = {
+        ...data,
+        fecha: new Date(data.fecha),
+        datosBiometricos: {
+          ...data.datosBiometricos,
+          imc: calcularIMC(data.datosBiometricos.peso, data.datosBiometricos.estatura)
+        }
+      }
+
+      console.log('🔄 Datos transformados:', transformedData)
+      setDebugInfo({ step: 'Datos transformados', data: transformedData })
 
       let result: IHistoriaClinicaResponse | null = null
 
       if (isEditing && historia) {
-        result = await updateHistoria(historia._id, data)
+        console.log('✏️ Actualizando historia existente...')
+        result = await updateHistoria(historia._id, transformedData)
       } else {
-        result = await createHistoria(data as IHistoriaClinicaCreate)
+        console.log('➕ Creando nueva historia...')
+        result = await createHistoria(transformedData as IHistoriaClinicaCreate)
       }
 
+      console.log('📋 Resultado del API:', result)
+      setDebugInfo({ step: 'Respuesta del API', data: result })
+
       if (result) {
+        console.log('✅ Historia guardada exitosamente')
         onSuccess(result)
+      } else {
+        console.log('❌ No se recibió resultado del API')
+        setDebugInfo({ step: 'Error: No hay resultado', data: null })
       }
     } catch (error) {
-      console.error('Error en formulario:', error)
+      console.error('💥 Error en formulario:', error)
+      setDebugInfo({ step: 'Error capturado', error: error.message })
     }
+  }
+
+  // ✅ Función de submit con prevención de comportamiento por defecto
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('🎯 Submit disparado')
+    handleSubmit(onSubmit)(e)
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* ✅ Información de debugging */}
+      {debugInfo && (
+        <Alert>
+          <AlertDescription>
+            <strong>Debug:</strong> {debugInfo.step}
+            {debugInfo.error && <div className="text-red-600">Error: {debugInfo.error}</div>}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <form onSubmit={handleFormSubmit} className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-cardionova-blue">
@@ -494,6 +531,53 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
                   <p className="text-sm text-red-600">{errors.evolucionEnfermedad.message}</p>
                 )}
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Plan de Tratamiento */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Plan de Tratamiento</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="dieta">Dieta *</Label>
+              <Textarea
+                id="dieta"
+                {...register('plan.dieta')}
+                placeholder="Describa el plan de dieta"
+                rows={3}
+              />
+              {errors.plan?.dieta && (
+                <p className="text-sm text-red-600">{errors.plan.dieta.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="actividadFisica">Actividad Física *</Label>
+              <Textarea
+                id="actividadFisica"
+                {...register('plan.actividadFisica')}
+                placeholder="Describa el plan de actividad física"
+                rows={3}
+              />
+              {errors.plan?.actividadFisica && (
+                <p className="text-sm text-red-600">{errors.plan.actividadFisica.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="pautasAlarma">Pautas de Alarma *</Label>
+              <Textarea
+                id="pautasAlarma"
+                {...register('plan.pautasAlarma')}
+                placeholder="Describa las pautas de alarma"
+                rows={3}
+              />
+              {errors.plan?.pautasAlarma && (
+                <p className="text-sm text-red-600">{errors.plan.pautasAlarma.message}</p>
+              )}
             </div>
           </CardContent>
         </Card>
