@@ -1,4 +1,4 @@
-// app/acceso-medicos/dashboard/page.tsx
+// app/acceso-medicos/dashboard/page.tsx - ACTUALIZADO
 
 'use client'
 
@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { LogOut, User, Calendar, FileText, Users, BarChart3 } from 'lucide-react'
+import { LogOut, User, Calendar, FileText, Users, BarChart3, Stethoscope, ClipboardList } from 'lucide-react'
 
 export default function DashboardPage() {
   const { user, isLoading, isAuthenticated, logout } = useAuth()
@@ -154,6 +154,22 @@ export default function DashboardPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Historias Clínicas</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Ver y administrar todas las historias clínicas del sistema.
+                  </p>
+                  <Link href="/acceso-medicos/dashboard/historia-clinica">
+                    <Button className="w-full">Ver Historiales</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
                     <BarChart3 className="h-4 w-4" />
                     <span>Reportes</span>
                   </CardTitle>
@@ -162,7 +178,9 @@ export default function DashboardPage() {
                   <p className="text-gray-600 mb-4">
                     Ver estadísticas y reportes del centro médico.
                   </p>
-                  <Button className="w-full" variant="outline">Ver Reportes</Button>
+                  <Link href="/acceso-medicos/dashboard/reportes">
+                    <Button className="w-full" variant="outline">Ver Reportes</Button>
+                  </Link>
                 </CardContent>
               </Card>
             </>
@@ -198,6 +216,22 @@ export default function DashboardPage() {
                   <Button className="w-full" variant="outline">Ver Pacientes</Button>
                 </CardContent>
               </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <FileText className="h-4 w-4" />
+                    <span>Historias Clínicas</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Ver historias clínicas de pacientes (solo lectura).
+                  </p>
+                  <Link href="/acceso-medicos/dashboard/historia-clinica">
+                    <Button className="w-full" variant="outline">Ver Historiales</Button>
+                  </Link>
+                </CardContent>
+              </Card>
             </>
           )}
 
@@ -221,14 +255,32 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <FileText className="h-4 w-4" />
-                    <span>Historia Clinica</span>
+                    <span>Historia Clínica</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
-                    Acceder a historiales clínicos de pacientes.
+                    Crear y gestionar historias clínicas de pacientes.
                   </p>
-                  <Button className="w-full" variant="outline">Ver Historiales</Button>
+                  <Link href="/acceso-medicos/dashboard/historia-clinica">
+                    <Button className="w-full bg-cardionova-red hover:bg-cardionova-darkred">
+                      Gestionar Historiales
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <ClipboardList className="h-4 w-4" />
+                    <span>Mis Pacientes</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Ver lista de pacientes atendidos y sus historiales.
+                  </p>
+                  <Button className="w-full" variant="outline">Ver Pacientes</Button>
                 </CardContent>
               </Card>
             </>
@@ -250,6 +302,54 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Información adicional para médicos */}
+        {user.role === 'MEDICO' && (
+          <div className="mt-8">
+            <Card className="bg-gradient-to-r from-blue-50 to-green-50 border-blue-200">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2 text-blue-800">
+                  <Stethoscope className="h-5 w-5" />
+                  <span>Portal Médico - Cardionova</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-semibold text-blue-700 mb-2">Funcionalidades Disponibles:</h4>
+                    <ul className="text-sm text-blue-600 space-y-1">
+                      <li>• Crear y editar historias clínicas completas</li>
+                      <li>• Calculadora automática de IMC</li>
+                      <li>• Plantillas predefinidas para examen físico</li>
+                      <li>• Códigos CIE-10 más utilizados</li>
+                      <li>• Gestión de medicamentos y tratamientos</li>
+                      <li>• Seguimiento de pacientes por cédula</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-blue-700 mb-2">Próximamente:</h4>
+                    <ul className="text-sm text-gray-600 space-y-1">
+                      <li>• Gestión de citas médicas</li>
+                      <li>• Alertas de seguimiento de pacientes</li>
+                      <li>• Generación automática de recetas</li>
+                      <li>• Integración con estudios médicos</li>
+                      <li>• Reportes estadísticos personalizados</li>
+                      <li>• Recordatorios de control médico</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-blue-200">
+                  <Link href="/acceso-medicos/dashboard/historia-clinica">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      <FileText className="mr-2 h-4 w-4" />
+                      Comenzar con Historia Clínica
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </div>
   )
