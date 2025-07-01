@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     const [historias, total] = await Promise.all([
+      // 🔧 CORRECCIÓN 1: Agregar casting explícito DESPUÉS del await
       HistoriaClinica.find(filters)
         .populate('medico', 'firstName lastName profile.speciality')
         .sort({ fecha: -1 })
@@ -114,12 +115,15 @@ export async function GET(request: NextRequest) {
       HistoriaClinica.countDocuments(filters)
     ])
 
+    // Cast después de obtener el resultado (usando unknown como paso intermedio)
+    const historiasTyped = historias as unknown as IHistoriaClinicaResponse[]
+
     const totalPages = Math.ceil(total / limit)
 
     const successResponse: GetHistoriasSuccessResponse = {
       success: true,
       message: 'Historias clínicas obtenidas correctamente',
-      historias: historias as IHistoriaClinicaResponse[],
+      historias: historiasTyped,
       pagination: {
         page,
         limit,
@@ -184,14 +188,22 @@ export async function POST(request: NextRequest) {
     await nuevaHistoria.save()
 
     // 5. Obtener la historia con datos del médico poblados
+    // 🔧 CORRECCIÓN 2: Agregar casting explícito aquí
     const historiaCompleta = await HistoriaClinica.findById(nuevaHistoria._id)
       .populate('medico', 'firstName lastName profile.speciality')
-      .lean()
+      .lean() as IHistoriaClinicaResponse | null
+
+    if (!historiaCompleta) {
+      return NextResponse.json({
+        success: false,
+        message: 'Error obteniendo la historia clínica creada'
+      }, { status: 500 })
+    }
 
     const successResponse: CreateHistoriaSuccessResponse = {
       success: true,
       message: 'Historia clínica creada exitosamente',
-      historia: historiaCompleta as IHistoriaClinicaResponse
+      historia: historiaCompleta // Ya no necesita casting aquí
     }
 
     return NextResponse.json(successResponse, { status: 201 })

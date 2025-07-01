@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     const successResponse: GetHistoriasSuccessResponse = {
       success: true,
       message: 'Historias clínicas obtenidas correctamente',
-      historias: historias as IHistoriaClinicaResponse[],
+      historias: historias as unknown as IHistoriaClinicaResponse[],
       pagination: {
         page,
         limit,
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
     const successResponse: CreateHistoriaSuccessResponse = {
       success: true,
       message: 'Historia clínica creada exitosamente',
-      historia: historiaCompleta as IHistoriaClinicaResponse
+      historia: historiaCompleta as unknown as IHistoriaClinicaResponse
     }
 
     return NextResponse.json(successResponse, { status: 201 })

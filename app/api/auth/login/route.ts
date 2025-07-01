@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import dbConnect from '@/lib/db/connection'
-import User from '@/lib/models/User'
+import User from '@/lib/models/User'  // ✅ Ruta corregida
 import { loginSchema } from '@/lib/db/validations/auth'
 import { generateTokenPair } from '@/lib/db/auth/jwt'
 import { AUTH_COOKIE_NAME, REFRESH_COOKIE_NAME, COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from '@/lib/db/auth/auth'
@@ -35,14 +35,23 @@ export async function POST(request: NextRequest) {
     const validationResult = loginSchema.safeParse(body)
 
     if (!validationResult.success) {
-      const errorResponse: LoginErrorResponse = handleValidationError(validationResult.error)
+      // ✅ Manejo correcto del error de validación
+      const validationError = handleValidationError(validationResult.error)
+      const errorResponse: LoginErrorResponse = {
+        success: false,
+        message: validationError.message,
+        errors: validationError.errors
+      }
       return NextResponse.json(errorResponse, { status: 400 })
     }
 
     const { email, password } = validationResult.data
 
-    // 3. Buscar usuario por email
-    const user = await User.findByEmail(email)
+    // 3. Buscar usuario por email - ✅ Usar método de mongoose estándar
+    const user = await User.findOne({ 
+      email: email.toLowerCase(), 
+      isActive: true 
+    }).exec()
 
     if (!user) {
       const errorResponse: LoginErrorResponse = {
@@ -83,8 +92,8 @@ export async function POST(request: NextRequest) {
       user.role
     )
 
-    // 8. Configurar cookies seguras
-    const cookieStore = cookies()
+    // 8. Configurar cookies seguras - ✅ Await cookies()
+    const cookieStore = await cookies()
 
     cookieStore.set(AUTH_COOKIE_NAME, accessToken, COOKIE_OPTIONS)
     cookieStore.set(REFRESH_COOKIE_NAME, refreshToken, REFRESH_COOKIE_OPTIONS)

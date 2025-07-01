@@ -77,7 +77,8 @@ export async function GET(
     const successResponse: SuccessResponse = {
       success: true,
       message: 'Historia clínica obtenida correctamente',
-      historia: historia as IHistoriaClinicaResponse
+      // 🔧 CORRECCIÓN 1: Usar unknown como paso intermedio
+      historia: historia as unknown as IHistoriaClinicaResponse
     }
 
     return NextResponse.json(successResponse, { status: 200 })
@@ -169,7 +170,8 @@ export async function PUT(
     const successResponse: SuccessResponse = {
       success: true,
       message: 'Historia clínica actualizada correctamente',
-      historia: historiaActualizada as IHistoriaClinicaResponse
+      // 🔧 CORRECCIÓN 2: Usar unknown como paso intermedio
+      historia: historiaActualizada as unknown as IHistoriaClinicaResponse
     }
 
     return NextResponse.json(successResponse, { status: 200 })

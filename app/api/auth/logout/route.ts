@@ -12,8 +12,8 @@ interface LogoutResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Obtener store de cookies
-    const cookieStore = cookies()
+    // 1. Obtener store de cookies - ✅ Agregar await
+    const cookieStore = await cookies()
 
     // 2. Eliminar cookies de autenticación
     cookieStore.delete(AUTH_COOKIE_NAME)
@@ -41,6 +41,26 @@ export async function POST(request: NextRequest) {
 
 // Manejar otros métodos HTTP
 export async function GET() {
+  return NextResponse.json(
+    {
+      success: false,
+      message: 'Método no permitido'
+    },
+    { status: 405 }
+  )
+}
+
+export async function PUT() {
+  return NextResponse.json(
+    {
+      success: false,
+      message: 'Método no permitido'
+    },
+    { status: 405 }
+  )
+}
+
+export async function DELETE() {
   return NextResponse.json(
     {
       success: false,
