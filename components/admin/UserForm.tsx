@@ -1,4 +1,4 @@
-// components/admin/UserForm.tsx
+// components/admin/UserForm.tsx - VERSIÓN CON DEBUGGING MEJORADO
 
 'use client'
 
@@ -16,7 +16,7 @@ import { Loader2, Eye, EyeOff } from 'lucide-react'
 import { UserRole, IUserResponse } from '@/types/user'
 import { useUsers } from '@/hooks/useUsers'
 
-// Esquema de validación para el formulario
+// ✅ Esquema de validación simplificado para debugging
 const userFormSchema = z.object({
   email: z.string().email('Email inválido').toLowerCase(),
   firstName: z.string().min(2, 'Mínimo 2 caracteres').max(50, 'Máximo 50 caracteres'),
@@ -51,7 +51,7 @@ const userFormSchema = z.object({
 type UserFormData = z.infer<typeof userFormSchema>
 
 interface UserFormProps {
-  user?: IUserResponse // Si se pasa, es edición; si no, es creación
+  user?: IUserResponse
   onSuccess: (user: IUserResponse) => void
   onCancel: () => void
 }
@@ -59,6 +59,7 @@ interface UserFormProps {
 export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [debugInfo, setDebugInfo] = useState<any>(null) // ✅ Para debugging
   const { createUser, updateUser, isLoading, error, clearError } = useUsers()
 
   const isEditing = !!user
@@ -95,12 +96,18 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
     }
   }, [watchedRole, setValue])
 
+  // ✅ Función de submit con debugging mejorado
   const onSubmit = async (data: UserFormData) => {
+    console.log('📝 Datos del formulario:', data)
+    console.log('⚙️ Errores de validación:', errors)
+
     try {
       clearError()
+      setDebugInfo({ step: 'Iniciando envío...', data })
 
       if (isEditing) {
-        // Actualizar usuario existente
+        console.log('✏️ Modo edición - actualizando usuario...')
+        
         const updateData = {
           email: data.email,
           firstName: data.firstName,
@@ -114,14 +121,24 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
           }
         }
 
+        console.log('🔄 Datos para actualización:', updateData)
+        setDebugInfo({ step: 'Enviando actualización...', data: updateData })
+
         const updatedUser = await updateUser(user._id, updateData)
         if (updatedUser) {
+          console.log('✅ Usuario actualizado exitosamente')
           onSuccess(updatedUser)
+        } else {
+          console.log('❌ Error: No se recibió usuario actualizado')
+          setDebugInfo({ step: 'Error: No hay resultado de actualización', data: null })
         }
       } else {
-        // Crear nuevo usuario
+        console.log('➕ Modo creación - creando nuevo usuario...')
+        
+        // Validar que la contraseña esté presente para creación
         if (!data.password) {
           form.setError('password', { message: 'La contraseña es requerida' })
+          setDebugInfo({ step: 'Error: Contraseña faltante', data })
           return
         }
 
@@ -140,13 +157,24 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
           }
         }
 
+        console.log('🔄 Datos para creación:', createData)
+        setDebugInfo({ step: 'Enviando creación...', data: createData })
+
         const newUser = await createUser(createData)
         if (newUser) {
+          console.log('✅ Usuario creado exitosamente')
           onSuccess(newUser)
+        } else {
+          console.log('❌ Error: No se recibió usuario creado')
+          setDebugInfo({ step: 'Error: No hay resultado de creación', data: null })
         }
       }
     } catch (error) {
-      console.error('Error en formulario:', error)
+      console.error('💥 Error en formulario:', error)
+      setDebugInfo({ 
+        step: 'Error capturado', 
+        error: typeof error === 'object' && error !== null && 'message' in error ? (error as { message: string }).message : String(error) 
+      })
     }
   }
 
@@ -167,6 +195,26 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* ✅ Información de debugging */}
+        {debugInfo && (
+          <Alert className="mb-4">
+            <AlertDescription>
+              <strong>Debug:</strong> {debugInfo.step}
+              {debugInfo.error && (
+                <div className="text-red-600 mt-1">Error: {debugInfo.error}</div>
+              )}
+              {debugInfo.data && (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-sm">Ver datos</summary>
+                  <pre className="text-xs mt-1 bg-gray-100 p-2 rounded">
+                    {JSON.stringify(debugInfo.data, null, 2)}
+                  </pre>
+                </details>
+              )}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Mostrar errores de la API */}
           {error && (
@@ -245,7 +293,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
             </div>
           </div>
 
-          {/* Contraseña (solo para creación o cambio) */}
+          {/* Contraseña (solo para creación) */}
           {!isEditing && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Credenciales</h3>
@@ -354,7 +402,7 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="licenseNumber">Número de Licencia *</Label>
+                  <Label htmlFor="licenseNumber">Número de Registro*</Label>
                   <Input
                     id="licenseNumber"
                     {...register('licenseNumber')}

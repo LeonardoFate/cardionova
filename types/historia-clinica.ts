@@ -1,199 +1,105 @@
-// types/historia-clinica.ts
+// types/historia-clinica.ts - VERSIÓN ACTUALIZADA
 
+export interface IPaciente {
+  nombre: string
+  cedula: string
+  tipoSeguro: string
+}
+
+export interface IDatosBiometricos {
+  edad: number
+  peso: number
+  estatura: number
+  imc: number
+}
+
+export interface ISignosVitales {
+  presionArterial: string
+  frecuenciaCardiaca: number
+  satO2: number
+  temperatura: number
+}
+
+// ✅ NUEVO: Antecedentes Personales Completos
+export interface IAntecedentesPersonales {
+  factoresRiesgoCardiovascular: string[]
+  antecedentesCardiovasculares: string
+  antecedentesPatologicosPersonales: string
+  antecedentesQuirurgicos: string
+  medicacion: string[]
+  alergias: string
+  antecedentesPatologicosFamiliares: string
+}
+
+// ✅ NUEVO: Examen por Sistemas
+export interface IExamenPorSistemas {
+  pielFaneras: string
+  sistemaRespiratorio: string
+  sistemaCardiovascular: string
+  sistemaGastrointestinal: string
+  sistemaGenitourinario: string
+  sistemaMusculoesqueletico: string
+  sistemaEndocrino: string
+  sistemaNeurologico: string
+}
+
+// ✅ NUEVO: Examen Físico Detallado
+export interface IExamenFisico {
+  inspeccionGeneral: string
+  escalaGlasgow: string
+  cuello: string
+  torax: string
+  corazon: string
+  pulmones: string
+  abdomen: string
+  extremidadesSuperiores: string
+  extremidadesInferiores: string
+}
+
+// ✅ NUEVO: Estudios Realizados
+export interface IEstudiosRealizados {
+  estudiosSeleccionados: string[]
+  resultados: string
+}
+
+// ✅ ACTUALIZADO: Plan Completo
+export interface IPlan {
+  tiempoControl?: Date
+  dieta: string
+  actividadFisica: string
+  pautasAlarma: string
+  reposo?: string
+  estudiosAdicionales: string[]
+}
+
+export interface ITratamiento {
+  medicamentos: string[]
+  observaciones: string
+}
+
+// ✅ INTERFAZ PRINCIPAL ACTUALIZADA
 export interface IHistoriaClinica {
-  _id?: string
-  // Datos del paciente
-  paciente: {
-    nombre: string
-    cedula: string
-    tipoSeguro: string
-  }
+  paciente: IPaciente
   fecha: Date
-
-  // Datos biométricos
-  datosBiometricos: {
-    edad: number
-    peso: number // kg
-    estatura: number // cm
-    imc: number // calculado automáticamente
-  }
-
-  // Signos vitales
-  signosVitales: {
-    presionArterial: string // ej: "120/80"
-    frecuenciaCardiaca: number
-    satO2: number
-    temperatura: number
-  }
-
-  // Información clínica
+  datosBiometricos: IDatosBiometricos
+  signosVitales: ISignosVitales
   motivoConsulta: string
   cie10: string
   enfermedadActual: string
   evolucionEnfermedad: string
 
-  // Antecedentes personales
-  antecedentesPersonales: {
-    factoresRiesgoCardiovascular: string[]
-    antecedentesCardiovasculares: string
-    antecedentesPatologicosPersonales: string
-    antecedentesQuirurgicos: string
-    medicacion: string[]
-    alergias: string
-    antecedentesPatologicosFamiliares: string
-  }
+  // ✅ NUEVOS CAMPOS
+  antecedentesPersonales: IAntecedentesPersonales
+  examenPorSistemas: IExamenPorSistemas
+  examenFisico: IExamenFisico
+  estudiosRealizados: IEstudiosRealizados
 
-  // Examen por sistemas
-  examenSistemas: {
-    pielFaneras: string
-    sistemaRespiratorio: string
-    sistemaCardiovascular: string
-    sistemaGastrointestinal: string
-    sistemaGenitourinario: string
-    sistemaMusculoesqueletico: string
-    sistemaEndocrino: string
-    sistemaNeurologico: string
-  }
-
-  // Examen físico
-  examenFisico: {
-    inspeccionGeneral: string
-    escalaGlasgow: string
-    cuello: string
-    torax: string
-    corazon: string
-    pulmones: string
-    abdomen: string
-    extremidadesSuperiores: string
-    extremidadesInferiores: string
-  }
-
-  // Estudios realizados
-  estudiosRealizados: {
-    estudios: string[]
-    conclusiones: string
-  }
-
-  // Plan de tratamiento
-  plan: {
-    tiempoControl?: Date
-    dieta: string
-    actividadFisica: string
-    pautasAlarma: string
-    reposo?: string
-    estudiosAdicionales: string[]
-  }
-
-  // Tratamiento farmacológico
-  tratamiento: {
-    medicamentos: string[]
-    observaciones: string
-  }
-
-  // Metadatos
-  medico: string // ID del médico
-  createdAt?: Date
-  updatedAt?: Date
+  plan: IPlan
+  tratamiento: ITratamiento
+  medico: string
 }
 
-export interface IHistoriaClinicaCreate {
-  paciente: {
-    nombre: string
-    cedula: string
-    tipoSeguro: string
-  }
-  fecha: Date
-  datosBiometricos: {
-    edad: number
-    peso: number
-    estatura: number
-  }
-  signosVitales: {
-    presionArterial: string
-    frecuenciaCardiaca: number
-    satO2: number
-    temperatura: number
-  }
-  motivoConsulta: string
-  cie10: string
-  enfermedadActual: string
-  evolucionEnfermedad: string
-  antecedentesPersonales: {
-    factoresRiesgoCardiovascular: string[]
-    antecedentesCardiovasculares: string
-    antecedentesPatologicosPersonales: string
-    antecedentesQuirurgicos: string
-    medicacion: string[]
-    alergias: string
-    antecedentesPatologicosFamiliares: string
-  }
-  examenSistemas?: {
-    pielFaneras?: string
-    sistemaRespiratorio?: string
-    sistemaCardiovascular?: string
-    sistemaGastrointestinal?: string
-    sistemaGenitourinario?: string
-    sistemaMusculoesqueletico?: string
-    sistemaEndocrino?: string
-    sistemaNeurologico?: string
-  }
-  examenFisico?: {
-    inspeccionGeneral?: string
-    escalaGlasgow?: string
-    cuello?: string
-    torax?: string
-    corazon?: string
-    pulmones?: string
-    abdomen?: string
-    extremidadesSuperiores?: string
-    extremidadesInferiores?: string
-  }
-  estudiosRealizados?: {
-    estudios?: string[]
-    conclusiones?: string
-  }
-  plan: {
-    tiempoControl?: Date
-    dieta: string
-    actividadFisica: string
-    pautasAlarma: string
-    reposo?: string
-    estudiosAdicionales: string[]
-  }
-  tratamiento: {
-    medicamentos: string[]
-    observaciones: string
-  }
-}
-
-export interface IHistoriaClinicaResponse extends Omit<IHistoriaClinica, 'medico'> {
-  _id: string
-  medico: {
-    _id: string
-    firstName: string
-    lastName: string
-    profile: {
-      speciality?: string
-    }
-  }
-  createdAt: Date
-  updatedAt: Date
-}
-
-// Opciones predefinidas para dropdowns
-export const CIE10_OPTIONS = [
-  'I25.9 - Enfermedad isquémica crónica del corazón, no especificada',
-  'I50.9 - Insuficiencia cardíaca, no especificada',
-  'I10 - Hipertensión esencial (primaria)',
-  'I48.9 - Fibrilación auricular, no especificada',
-  'I34.0 - Insuficiencia de la válvula mitral',
-  'I35.0 - Estenosis aórtica',
-  'I44.2 - Bloqueo auriculoventricular completo',
-  'I20.9 - Angina de pecho, no especificada',
-  'I21.9 - Infarto agudo del miocardio, no especificado',
-  'Z51.11 - Quimioterapia para neoplasia'
-]
-
+// ✅ NUEVAS CONSTANTES
 export const FACTORES_RIESGO_CARDIOVASCULAR = [
   'HIPERTENSION ARTERIAL',
   'DIABETES MELLITUS TIPO 2 IR',
@@ -206,32 +112,84 @@ export const FACTORES_RIESGO_CARDIOVASCULAR = [
   'ESTRÉS',
   'ENFERMEDAD RENAL CRONICA',
   'CONSUMO DE DROGAS'
-]
+] as const
 
 export const ESTUDIOS_DISPONIBLES = [
   'Electrocardiograma',
   'Ecocardiograma',
   'Prueba de esfuerzo',
-  'Holter de ritmo 24h',
-  'Monitoreo ambulatorio de presión arterial',
+  'Holter de ritmo 24hs',
+  'Holter de presión 24hs',
   'Radiografía de tórax',
-  'Cateterismo cardíaco',
   'Tomografía cardíaca',
-  'Resonancia magnética cardíaca',
-  'Laboratorios completos',
-  'Perfil lipídico',
-  'Hemograma completo'
-]
+  'Cateterismo cardíaco',
+  'Laboratorio completo',
+  'Perfil lipídico'
+] as const
 
 export const MEDICAMENTOS_COMUNES = [
-  'Aspirina 100mg',
-  'Atorvastatina 20mg',
   'Enalapril 10mg',
-  'Metoprolol 50mg',
-  'Amlodipino 5mg',
   'Losartán 50mg',
-  'Furosemida 40mg',
-  'Carvedilol 6.25mg',
+  'Amlodipina 5mg',
+  'Atenolol 50mg',
+  'Metoprolol 50mg',
   'Simvastatina 20mg',
-  'Clopidogrel 75mg'
-]
+  'Atorvastatina 20mg',
+  'Aspirina 100mg',
+  'Clopidogrel 75mg',
+  'Furosemida 40mg'
+] as const
+
+export const CIE10_OPTIONS = [
+  'I10 - Hipertensión esencial',
+  'I25.1 - Enfermedad aterosclerótica del corazón',
+  'I48 - Fibrilación auricular',
+  'I50.9 - Insuficiencia cardíaca no especificada',
+  'I20.9 - Angina de pecho no especificada',
+  'I21.9 - Infarto agudo del miocardio no especificado',
+  'I25.9 - Enfermedad cardíaca isquémica crónica',
+  'I42.9 - Cardiomiopatía no especificada',
+  'I44.1 - Bloqueo auriculoventricular de primer grado',
+  'I34.0 - Insuficiencia mitral no reumática'
+] as const
+
+// ✅ VALORES POR DEFECTO
+export const EXAMEN_POR_SISTEMAS_DEFAULT = {
+  pielFaneras: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaRespiratorio: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaCardiovascular: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaGastrointestinal: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaGenitourinario: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaMusculoesqueletico: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaEndocrino: 'NADA QUE LLAME LA ATENCIÓN',
+  sistemaNeurologico: 'NADA QUE LLAME LA ATENCIÓN'
+} as const
+
+export const EXAMEN_FISICO_DEFAULT = {
+  inspeccionGeneral: 'PACIENTE ORIENTADO EN TIEMPO Y ESPACIO, COLABORA CON EL INTERROGATORIO',
+  escalaGlasgow: '15/15',
+  cuello: 'MOVIL - NO ADENOPATIAS PALPABLES - YUGULAR 0/3',
+  torax: 'SIMETRICO',
+  corazon: 'RUIDOS CARDIACOS RITMICOS, NO SOPLOS, NO RUIDOS AGREGADOS',
+  pulmones: 'CLAROS Y VENTILADOS',
+  abdomen: 'BLANDO DEPRESIBLE NO DOLOROSO, NO MASAS RUIDOS HIDROAEREOS PRESENTES',
+  extremidadesSuperiores: 'SIMETRICAS - MOVILES - NO DOLOROSOS - PULSOS PRESENTES',
+  extremidadesInferiores: 'SIMETRICAS - MOVILES - NO DOLOROSOS - PULSOS PRESENTES - NO EDEMA'
+} as const
+
+// Interfaces de respuesta (sin cambios)
+export interface IHistoriaClinicaResponse extends Omit<IHistoriaClinica, 'medico'> {
+  _id: string
+  createdAt: Date
+  updatedAt: Date
+  medico: {
+    _id: string
+    firstName: string
+    lastName: string
+    profile: {
+      speciality?: string
+    }
+  }
+}
+export interface IHistoriaClinicaCreate extends Omit<IHistoriaClinica, 'medico'> {}
+export interface IHistoriaClinicaUpdate extends Partial<IHistoriaClinicaCreate> {}

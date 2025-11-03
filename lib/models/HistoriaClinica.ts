@@ -1,10 +1,12 @@
-// lib/models/HistoriaClinica.ts
+// lib/models/HistoriaClinica.ts - ARREGLO TYPESCRIPT
 
 import mongoose, { Schema, Document } from 'mongoose'
 import { IHistoriaClinica } from '@/types/historia-clinica'
 
-export interface IHistoriaClinicaDocument extends IHistoriaClinica, Document {
+// ✅ ARREGLO: Extender correctamente la interfaz
+export interface IHistoriaClinicaDocument extends Omit<IHistoriaClinica, 'medico'>, Document {
   _id: string
+  medico: mongoose.Types.ObjectId
   createdAt: Date
   updatedAt: Date
 }
@@ -22,7 +24,7 @@ const HistoriaClinicaSchema = new Schema<IHistoriaClinicaDocument>(
         type: String,
         required: [true, 'La cédula del paciente es requerida'],
         trim: true,
-        unique: false // Un paciente puede tener múltiples historias
+        unique: false
       },
       tipoSeguro: {
         type: String,
@@ -86,8 +88,8 @@ const HistoriaClinicaSchema = new Schema<IHistoriaClinicaDocument>(
       temperatura: {
         type: Number,
         required: [true, 'La temperatura es requerida'],
-        min: [30, 'Temperatura muy baja'],
-        max: [45, 'Temperatura muy alta']
+        min: [0, 'La temperatura debe ser un número positivo']
+
       }
     },
 
@@ -154,7 +156,7 @@ const HistoriaClinicaSchema = new Schema<IHistoriaClinicaDocument>(
     },
 
     // Examen por sistemas
-    examenSistemas: {
+    examenPorSistemas: {
       pielFaneras: {
         type: String,
         trim: true,
@@ -248,11 +250,11 @@ const HistoriaClinicaSchema = new Schema<IHistoriaClinicaDocument>(
 
     // Estudios realizados
     estudiosRealizados: {
-      estudios: [{
+      estudiosSeleccionados: [{
         type: String,
         trim: true
       }],
-      conclusiones: {
+      resultados: {
         type: String,
         trim: true,
         default: ''
@@ -320,9 +322,10 @@ const HistoriaClinicaSchema = new Schema<IHistoriaClinicaDocument>(
   }
 )
 
-// Middleware pre-save para calcular IMC automáticamente
-HistoriaClinicaSchema.pre('save', function(next) {
-  if (this.datosBiometricos.peso && this.datosBiometricos.estatura) {
+// ✅ ARREGLO: Middleware pre-save con tipo correcto
+HistoriaClinicaSchema.pre('save', function(this: IHistoriaClinicaDocument, next) {
+  // Verificar que los datos biométricos existen antes de calcular IMC
+  if (this.datosBiometricos?.peso && this.datosBiometricos?.estatura) {
     const estaturaEnMetros = this.datosBiometricos.estatura / 100
     this.datosBiometricos.imc = Math.round(
       (this.datosBiometricos.peso / (estaturaEnMetros * estaturaEnMetros)) * 100
