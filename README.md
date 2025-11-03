@@ -20,6 +20,38 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Scripts
+
+This project includes scripts to seed the database with test users.
+
+### Seed Users
+
+To create a set of test users (admin, doctor, secretary), run the following command:
+
+```bash
+node scripts/seed-users.mjs
+```
+
+This script will connect to the database and create the users directly.
+
+### Create a Test Admin User
+
+To create a single test admin user, make sure the development server is running (`pnpm dev`) and then run:
+
+```bash
+pnpm tsx scripts/create-test-user.ts
+```
+
+This script will call the API to create the user. Note that you will need to manually update the user's role to `admin` in the database.
+
+### SQL Seed
+
+Alternatively, you can use the SQL script to seed the database:
+
+```bash
+psql $DATABASE_URL -f scripts/seed-users.sql
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
