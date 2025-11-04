@@ -127,25 +127,25 @@ export const medicalRecord = pgTable("medical_record", {
   familyPathologicalHistory: text("family_pathological_history"),
 
   // System review (Examen por sistemas)
-  skinAndAppendages: text("skin_and_appendages").default("NADA QUE LLAME LA ATENCIÓN"),
-  respiratorySystem: text("respiratory_system").default("NADA QUE LLAME LA ATENCIÓN"),
-  cardiovascularSystem: text("cardiovascular_system").default("NADA QUE LLAME LA ATENCIÓN"),
-  gastrointestinalSystem: text("gastrointestinal_system").default("NADA QUE LLAME LA ATENCIÓN"),
-  genitourinarySystem: text("genitourinary_system").default("NADA QUE LLAME LA ATENCIÓN"),
-  musculoskeletalSystem: text("musculoskeletal_system").default("NADA QUE LLAME LA ATENCIÓN"),
-  endocrineSystem: text("endocrine_system").default("NADA QUE LLAME LA ATENCIÓN"),
-  neurologicalSystem: text("neurological_system").default("NADA QUE LLAME LA ATENCIÓN"),
+  skinAndAppendages: text("skin_and_appendages"),
+  respiratorySystem: text("respiratory_system"),
+  cardiovascularSystem: text("cardiovascular_system"),
+  gastrointestinalSystem: text("gastrointestinal_system"),
+  genitourinarySystem: text("genitourinary_system"),
+  musculoskeletalSystem: text("musculoskeletal_system"),
+  endocrineSystem: text("endocrine_system"),
+  neurologicalSystem: text("neurological_system"),
 
   // Physical exam
-  generalInspection: text("general_inspection").default("PACIENTE ORIENTADO EN TIEMPO Y ESPACIO, COLABORA CON EL INTERROGATORIO"),
-  glasgowScale: text("glasgow_scale").default("15/15"),
-  neck: text("neck").default("MOVIL - NO ADENOPATIAS PALPABLES - YUGULAR 0/3"),
-  thorax: text("thorax").default("SIMETRICO"),
-  heart: text("heart").default("RUIDOS CARDIACOS RITMICOS, NO SOPLOS, NO RUIDOS AGREGADOS"),
-  lungs: text("lungs").default("CLAROS Y VENTILADOS"),
-  abdomen: text("abdomen").default("BLANDO DEPRESIBLE NO DOLOROSO, NO MASAS RUIDOS HIDROAEREOS PRESENTES"),
-  upperExtremities: text("upper_extremities").default("SIMETRICAS - MOVILES - NO DOLOROSOS - PULSOS PRESENTES"),
-  lowerExtremities: text("lower_extremities").default("SIMETRICAS - MOVILES - NO DOLOROSOS - PULSOS PRESENTES - NO EDEMA"),
+  generalInspection: text("general_inspection"),
+  glasgowScale: text("glasgow_scale"),
+  neck: text("neck"),
+  thorax: text("thorax"),
+  heart: text("heart"),
+  lungs: text("lungs"),
+  abdomen: text("abdomen"),
+  upperExtremities: text("upper_extremities"),
+  lowerExtremities: text("lower_extremities"),
 
   // Studies performed
   studiesPerformed: json("studies_performed").$type<string[]>(), // Array of study types

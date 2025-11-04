@@ -2,16 +2,27 @@
 docker run --name cardionova-postgres -e POSTGRES_PASSWORD=admin123 -d -p 5432:5432 postgres
 
 
-## 2 Script
+## 2 Scripts
 
-This project includes scripts to seed the database with a admin user.
-Crea las tablas y el user
-admin@cardionova.com
-password
-admin123
+This project includes scripts to manage the database.
 
-node scripts/migrate.mjs && node scripts/seed-admin.mjs
+### Create tables and seed admin user
 
-Para reiniciar todo:
-node scripts/reset-db.mjs && node scripts/migrate.mjs && node scripts/seed-admin.mjs
+This command will create the necessary tables in the database and seed it with a default admin user.
+
+**Credentials:**
+- **Email:** `admin@cardionova.com`
+- **Password:** `admin123`
+
+```bash
+node scripts/migrate.mjs && pnpm tsx --env-file .env scripts/seed-admin.ts
+```
+
+### Reset database
+
+This command will reset the database, create the tables, and seed the admin user again.
+
+```bash
+node scripts/reset-db.mjs && node scripts/migrate.mjs && pnpm tsx --env-file .env scripts/seed-admin.ts
+```
 
