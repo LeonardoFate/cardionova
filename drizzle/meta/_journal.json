@@ -15,6 +15,20 @@
       "when": 1762185900210,
       "tag": "0001_glossy_mariko_yashida",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762213515890,
+      "tag": "0002_furry_toad",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1762224432906,
+      "tag": "0003_tense_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

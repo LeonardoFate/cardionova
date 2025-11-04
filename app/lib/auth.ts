@@ -9,11 +9,42 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  socialProviders: {
-    // You can add social providers here later
-    // github: {
-    //   clientId: process.env.GITHUB_CLIENT_ID!,
-    //   clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    // },
+  user: {
+    additionalFields: {
+      firstNames: {
+        type: "string",
+        required: true,
+      },
+      lastNames: {
+        type: "string",
+        required: true,
+      },
+      role: {
+        type: "string",
+        required: true,
+        defaultValue: "doctor",
+      },
+      isActive: {
+        type: "boolean",
+        required: true,
+        defaultValue: true,
+      },
+      phone: {
+        type: "string",
+        required: false,
+      },
+      speciality: {
+        type: "string",
+        required: false,
+      },
+      licenseNumber: {
+        type: "string",
+        required: false,
+      },
+      department: {
+        type: "string",
+        required: false,
+      },
+    },
   },
 });
