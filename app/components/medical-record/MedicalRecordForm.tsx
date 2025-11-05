@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,7 +24,7 @@ import {
 } from "@/app/lib/medical-constants";
 import { Plus, X, ChevronDown, ChevronUp } from "lucide-react";
 
-import { DatePicker } from "@/app/components/ui/date-picker";
+import { DatePicker } from "@/components/ui/date-picker";
 
 // Optional Section Component
 interface OptionalSectionProps {
@@ -207,14 +207,14 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
       patientName: "",
       patientIdNumber: "",
       insuranceType: "",
-      age: 0,
-      weight: 0,
-      height: 0,
+      age: undefined,
+      weight: undefined,
+      height: undefined,
       bmi: undefined,
       bloodPressure: "",
-      heartRate: 70,
-      oxygenSaturation: 98,
-      temperature: 36.5,
+      heartRate: undefined,
+      oxygenSaturation: undefined,
+      temperature: undefined,
       consultationReason: "",
       cie10Code: "",
       currentIllness: "",
@@ -254,6 +254,15 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
   // Watch biometric values for BMI calculation
   const weight = form.watch("weight");
   const height = form.watch("height");
+
+  // Auto-calculate BMI
+  useEffect(() => {
+    if (weight && height && height > 0) {
+      const heightInMeters = height / 100;
+      const calculatedBMI = weight / (heightInMeters * heightInMeters);
+      form.setValue("bmi", parseFloat(calculatedBMI.toFixed(2)));
+    }
+  }, [weight, height, form]);
 
   // Filter additional studies
   const availableAdditionalStudies = useMemo(() => {
@@ -398,7 +407,8 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                         <Input
                           type="number"
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -417,7 +427,8 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                           type="number"
                           step="0.1"
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         />
                       </FormControl>
                       <FormMessage />
@@ -436,7 +447,8 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                           type="number"
                           step="0.1"
                           {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
                         />
                       </FormControl>
                       <FormMessage />
