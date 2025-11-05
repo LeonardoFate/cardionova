@@ -24,6 +24,8 @@ import {
 } from "@/app/lib/medical-constants";
 import { Plus, X, ChevronDown, ChevronUp } from "lucide-react";
 
+import { DatePicker } from "@/app/components/ui/date-picker";
+
 // Optional Section Component
 interface OptionalSectionProps {
   title: string;
@@ -253,15 +255,6 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
   const weight = form.watch("weight");
   const height = form.watch("height");
 
-  // Auto-calculate BMI
-  useMemo(() => {
-    if (weight && height && height > 0) {
-      const heightInMeters = height / 100;
-      const calculatedBMI = weight / (heightInMeters * heightInMeters);
-      form.setValue("bmi", parseFloat(calculatedBMI.toFixed(2)));
-    }
-  }, [weight, height, form]);
-
   // Filter additional studies
   const availableAdditionalStudies = useMemo(() => {
     return MEDICAL_STUDIES.filter(
@@ -329,10 +322,18 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
               control={form.control}
               name="recordDate"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Fecha *</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <DatePicker 
+                      date={field.value ? new Date(field.value.split('-')[0], parseInt(field.value.split('-')[1]) - 1, parseInt(field.value.split('-')[2])) : undefined}
+                      setDate={(date) => {
+                        if (date) {
+                          const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                          field.onChange(formattedDate);
+                        }
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -634,6 +635,7 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                 );
               }}
               columns={2}
+              idPrefix="cardiovascular-risk"
             />
 
             <FormField
@@ -1044,6 +1046,7 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                 );
               }}
               columns={2}
+              idPrefix="studies-performed"
             />
 
             <FormField
@@ -1077,10 +1080,20 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
               control={form.control}
               name="followUpDate"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Tiempo de Control</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <DatePicker 
+                      date={field.value ? new Date(field.value.split('-')[0], parseInt(field.value.split('-')[1]) - 1, parseInt(field.value.split('-')[2])) : undefined}
+                      setDate={(date) => {
+                        if (date) {
+                          const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+                          field.onChange(formattedDate);
+                        } else {
+                            field.onChange(undefined);
+                        }
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -1171,6 +1184,7 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                 );
               }}
               columns={2}
+              idPrefix="additional-studies"
             />
           </div>
         </OptionalSection>

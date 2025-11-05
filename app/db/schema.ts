@@ -103,7 +103,7 @@ export const medicalRecord = pgTable("medical_record", {
   age: integer("age").notNull(),
   weight: decimal("weight", { precision: 5, scale: 2 }), // kg
   height: decimal("height", { precision: 5, scale: 2 }), // cm
-  bmi: decimal("bmi", { precision: 4, scale: 2 }), // calculated
+  bmi: decimal("bmi", { precision: 6, scale: 2 }), // calculated
 
   // Vital signs
   bloodPressure: text("blood_pressure"), // e.g., "120/80"

@@ -3,11 +3,11 @@ import { medicalRecord, patient } from "@/app/db/schema";
 import { nanoid } from "nanoid";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, or, ilike, count } from "drizzle-orm";
 import { db } from "@/app";
 
-// GET - List all medical records
-export async function GET() {
+// GET - List all medical records with search and pagination
+export async function GET(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -17,8 +17,20 @@ export async function GET() {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    // Fetch medical records with patient information
-    const records = await db
+    const url = request.nextUrl;
+    const search = url.searchParams.get('search');
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const pageSize = parseInt(url.searchParams.get('pageSize') || '10');
+
+    const whereClause = search
+      ? or(
+          ilike(patient.fullName, `%${search}%`),
+          ilike(patient.idNumber, `%${search}%`)
+        )
+      : undefined;
+
+    // Query for paginated data
+    const recordsPromise = db
       .select({
         id: medicalRecord.id,
         recordDate: medicalRecord.recordDate,
@@ -26,13 +38,34 @@ export async function GET() {
         patientIdNumber: patient.idNumber,
         consultationReason: medicalRecord.consultationReason,
         cie10Code: medicalRecord.cie10Code,
-        createdAt: medicalRecord.createdAt,
       })
       .from(medicalRecord)
       .innerJoin(patient, eq(medicalRecord.patientId, patient.id))
-      .orderBy(desc(medicalRecord.createdAt));
+      .where(whereClause)
+      .orderBy(desc(medicalRecord.recordDate))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
 
-    return NextResponse.json(records);
+    // Query for total count
+    const totalCountPromise = db
+      .select({ total: count() })
+      .from(medicalRecord)
+      .innerJoin(patient, eq(medicalRecord.patientId, patient.id))
+      .where(whereClause);
+
+    const [records, totalCountResult] = await Promise.all([
+      recordsPromise,
+      totalCountPromise,
+    ]);
+
+    const totalCount = totalCountResult[0]?.total || 0;
+
+    return NextResponse.json({
+      data: records,
+      totalCount,
+      page,
+      pageSize,
+    });
   } catch (error) {
     console.error("Error fetching medical records:", error);
     return NextResponse.json(

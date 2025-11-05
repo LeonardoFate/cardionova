@@ -7,6 +7,7 @@ interface CheckboxGroupProps {
   onToggle: (value: string) => void;
   label?: string;
   columns?: number;
+  idPrefix?: string;
 }
 
 export function CheckboxGroup({
@@ -15,6 +16,7 @@ export function CheckboxGroup({
   onToggle,
   label,
   columns = 2,
+  idPrefix = "",
 }: CheckboxGroupProps) {
   const gridClass = `grid grid-cols-1 md:grid-cols-${columns} gap-3`;
 
@@ -22,21 +24,24 @@ export function CheckboxGroup({
     <div className="space-y-3">
       {label && <Label className="text-sm font-medium">{label}</Label>}
       <div className={gridClass}>
-        {options.map((option) => (
-          <div key={option} className="flex items-center space-x-2">
-            <Checkbox
-              id={option}
-              checked={selectedValues.includes(option)}
-              onCheckedChange={() => onToggle(option)}
-            />
-            <label
-              htmlFor={option}
-              className="text-sm font-normal cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              {option}
-            </label>
-          </div>
-        ))}
+        {options.map((option) => {
+          const uniqueId = idPrefix ? `${idPrefix}-${option}` : option;
+          return (
+            <div key={option} className="flex items-center space-x-2">
+              <Checkbox
+                id={uniqueId}
+                checked={selectedValues.includes(option)}
+                onCheckedChange={() => onToggle(option)}
+              />
+              <label
+                htmlFor={uniqueId}
+                className="text-sm font-normal cursor-pointer leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                {option}
+              </label>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

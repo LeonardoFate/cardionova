@@ -1,0 +1,1 @@
+ALTER TABLE "medical_record" ALTER COLUMN "bmi" SET DATA TYPE numeric(6, 2);

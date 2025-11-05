@@ -36,6 +36,20 @@
       "when": 1762295307744,
       "tag": "0004_solid_martin_li",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1762316241641,
+      "tag": "0005_fix-bmi-precision",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1762316710011,
+      "tag": "0006_increase-bmi-precision-again",
+      "breakpoints": true
     }
   ]
 }
