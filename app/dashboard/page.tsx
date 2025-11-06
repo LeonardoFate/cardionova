@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/app/lib/auth";
 import { headers } from "next/headers";
 import { db } from "@/app/index";
-import { user } from "@/app/db/schema";
+import { user, patient, medicalRecord } from "@/app/db/schema";
 import { count, eq } from "drizzle-orm";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +28,11 @@ export default async function DashboardPage() {
       ? `Bienvenida, ${userName}`
       : `Bienvenido, Dr. ${userName}`;
 
+  // Get counts from database
   let userCount = 0;
+  let patientCount = 0;
+  let medicalRecordCount = 0;
+
   if (userRole === "admin") {
     const result = await db
       .select({ value: count() })
@@ -36,6 +40,18 @@ export default async function DashboardPage() {
       .where(eq(user.isActive, true));
     userCount = result[0].value;
   }
+
+  // Get patient count
+  const patientResult = await db
+    .select({ value: count() })
+    .from(patient);
+  patientCount = patientResult[0]?.value || 0;
+
+  // Get medical record count
+  const medicalRecordResult = await db
+    .select({ value: count() })
+    .from(medicalRecord);
+  medicalRecordCount = medicalRecordResult[0]?.value || 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -120,7 +136,7 @@ export default async function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-gray-900 mb-2">0</p>
+                <p className="text-3xl font-bold text-gray-900 mb-2">{patientCount}</p>
                 <p className="text-sm text-gray-500">Total de pacientes registrados</p>
               </CardContent>
             </Card>
@@ -186,7 +202,7 @@ export default async function DashboardPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold text-gray-900 mb-2">0</p>
+                  <p className="text-3xl font-bold text-gray-900 mb-2">{medicalRecordCount}</p>
                   <p className="text-sm text-gray-500">Historias clínicas registradas</p>
                 </CardContent>
               </Card>
