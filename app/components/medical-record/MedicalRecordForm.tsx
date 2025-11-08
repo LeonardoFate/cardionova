@@ -75,28 +75,16 @@ const createMedicalRecordSchema = (toggles: {
     insuranceType: z.string().min(2, "El tipo de seguro es requerido"),
 
     // Biometric Data (Always Required)
-    age: z.union([z.number(), z.literal("")]).refine((val) => val !== "" && val >= 0 && val <= 150, {
-      message: "La edad es requerida y debe estar entre 0 y 150"
-    }),
-    weight: z.union([z.number(), z.literal("")]).refine((val) => val !== "" && val >= 1 && val <= 500, {
-      message: "El peso es requerido y debe estar entre 1 y 500 kg"
-    }),
-    height: z.union([z.number(), z.literal("")]).refine((val) => val !== "" && val >= 50 && val <= 300, {
-      message: "La altura es requerida y debe estar entre 50 y 300 cm"
-    }),
-    bmi: z.union([z.number(), z.literal("")]).optional(),
+    age: z.number().min(1, "La edad es requerida y debe ser mayor a 0").max(150, "La edad debe estar entre 1 y 150 años"),
+    weight: z.number().min(1, "El peso es requerido y debe ser mayor a 0").max(500, "El peso debe estar entre 1 y 500 kg"),
+    height: z.number().min(50, "La altura es requerida y debe ser mayor a 50 cm").max(300, "La altura debe estar entre 50 y 300 cm"),
+    bmi: z.number().optional(),
 
     // Vital Signs (Always Required)
     bloodPressure: z.string().min(1, "La presión arterial es requerida"),
-    heartRate: z.union([z.number(), z.literal("")]).refine((val) => val !== "" && val >= 20 && val <= 300, {
-      message: "La frecuencia cardíaca es requerida y debe estar entre 20 y 300 bpm"
-    }),
-    oxygenSaturation: z.union([z.number(), z.literal("")]).refine((val) => val !== "" && val >= 0 && val <= 100, {
-      message: "La saturación de oxígeno es requerida y debe estar entre 0 y 100%"
-    }),
-    temperature: z.union([z.number(), z.literal("")]).refine((val) => val !== "" && val >= 30 && val <= 45, {
-      message: "La temperatura es requerida y debe estar entre 30 y 45°C"
-    }),
+    heartRate: z.number().min(20, "La frecuencia cardíaca debe ser mayor a 20 bpm").max(300, "La frecuencia cardíaca debe estar entre 20 y 300 bpm"),
+    oxygenSaturation: z.number().min(1, "La saturación de oxígeno es requerida y debe ser mayor a 0").max(100, "La saturación de oxígeno debe estar entre 1 y 100%"),
+    temperature: z.number().min(30, "La temperatura debe ser mayor a 30°C").max(45, "La temperatura debe estar entre 30 y 45°C"),
 
     // Consultation (Always Required)
     consultationReason: z.string().min(5, "El motivo de consulta es requerido"),
@@ -219,14 +207,14 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
       patientName: "",
       patientIdNumber: "",
       insuranceType: "",
-      age: "" as any,
-      weight: "" as any,
-      height: "" as any,
-      bmi: "" as any,
+      age: 0,
+      weight: 0,
+      height: 0,
+      bmi: undefined,
       bloodPressure: "",
-      heartRate: "" as any,
-      oxygenSaturation: "" as any,
-      temperature: "" as any,
+      heartRate: 0,
+      oxygenSaturation: 0,
+      temperature: 0,
       consultationReason: "",
       cie10Code: "",
       currentIllness: "",
@@ -518,7 +506,8 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -536,7 +525,8 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                     <Input
                       type="number"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
@@ -555,7 +545,8 @@ export function MedicalRecordForm({ onSubmit, onCancel, initialData, isViewMode 
                       type="number"
                       step="0.1"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.value === "" ? "" : Number(e.target.value))}
+                      value={field.value || ""}
+                      onChange={(e) => field.onChange(e.target.value === "" ? 0 : Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
