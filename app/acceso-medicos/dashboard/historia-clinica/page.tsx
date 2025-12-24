@@ -3,12 +3,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth, isAdmin, isDoctor } from '@/contexts/AuthContext'
+import { useAuth, isAdmin, isDoctor, isSecretary } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { HistoriaClinicaList } from '@/components/historia-clinica/HistoriaClinicaList'
 import { HistoriaClinicaForm } from '@/components/historia-clinica/HistoriaClinicaForm'
 import { IHistoriaClinicaResponse } from '@/types/historia-clinica'
+import { IPacienteResponse } from '@/types/paciente'
 import {
   Dialog,
   DialogContent,
@@ -23,17 +24,44 @@ type ViewMode = 'list' | 'create' | 'edit' | 'view'
 export default function HistoriaClinicaPage() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const pacienteId = searchParams.get('paciente')
 
   const [viewMode, setViewMode] = useState<ViewMode>('list')
   const [selectedHistoria, setSelectedHistoria] = useState<IHistoriaClinicaResponse | undefined>()
+  const [selectedPaciente, setSelectedPaciente] = useState<IPacienteResponse | undefined>()
   const [showDialog, setShowDialog] = useState(false)
 
   // Verificar autenticación y permisos
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || (!isDoctor(user) && !isAdmin(user)))) {
+    if (!isLoading && (!isAuthenticated || (!isDoctor(user) && !isAdmin(user) && !isSecretary(user)))) {
       router.push('/acceso-medicos')
     }
   }, [isLoading, isAuthenticated, user, router])
+
+  // Cargar datos del paciente si viene el ID en la URL
+  useEffect(() => {
+    const loadPaciente = async () => {
+      if (pacienteId && isAuthenticated) {
+        try {
+          const response = await fetch(`/api/pacientes/${pacienteId}`)
+          const data = await response.json()
+
+          if (data.success && data.paciente) {
+            setSelectedPaciente(data.paciente)
+            setViewMode('create')
+            setShowDialog(true)
+          } else {
+            console.error('Error al cargar paciente:', data.message)
+          }
+        } catch (error) {
+          console.error('Error cargando paciente:', error)
+        }
+      }
+    }
+
+    loadPaciente()
+  }, [pacienteId, isAuthenticated])
 
   // Mostrar loading mientras verifica autenticación
   if (isLoading) {
@@ -45,13 +73,13 @@ export default function HistoriaClinicaPage() {
   }
 
   // Verificar permisos
-  if (!isAuthenticated || (!isDoctor(user) && !isAdmin(user))) {
+  if (!isAuthenticated || (!isDoctor(user) && !isAdmin(user) && !isSecretary(user))) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <Alert className="max-w-md" variant="destructive">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            No tienes permisos para acceder a esta página. Solo los médicos y administradores pueden gestionar historias clínicas.
+            No tienes permisos para acceder a esta página.
           </AlertDescription>
         </Alert>
       </div>
@@ -81,6 +109,11 @@ export default function HistoriaClinicaPage() {
     setShowDialog(false)
     setViewMode('list')
     setSelectedHistoria(undefined)
+    setSelectedPaciente(undefined)
+    // Limpiar el query param de la URL
+    if (pacienteId) {
+      router.push('/acceso-medicos/dashboard/historia-clinica')
+    }
   }
 
   const handleHistoriaSuccess = (historia: IHistoriaClinicaResponse) => {
@@ -104,6 +137,9 @@ export default function HistoriaClinicaPage() {
   const getDialogDescription = () => {
     switch (viewMode) {
       case 'create':
+        if (selectedPaciente) {
+          return `Creando historia clínica para: ${selectedPaciente.nombre} ${selectedPaciente.apellido} (${selectedPaciente.cedula})`
+        }
         return 'Complete todos los campos requeridos para crear una nueva historia clínica.'
       case 'edit':
         return `Editando historia clínica de ${selectedHistoria?.paciente.nombre || ''}`
@@ -180,6 +216,7 @@ export default function HistoriaClinicaPage() {
             {(viewMode === 'create' || viewMode === 'edit') && (
               <HistoriaClinicaForm
                 historia={selectedHistoria}
+                paciente={selectedPaciente}
                 onSuccess={handleHistoriaSuccess}
                 onCancel={handleCloseDialog}
               />

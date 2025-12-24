@@ -107,8 +107,8 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
 
       if (isEditing) {
         console.log('✏️ Modo edición - actualizando usuario...')
-        
-        const updateData = {
+
+        const updateData: any = {
           email: data.email,
           firstName: data.firstName,
           lastName: data.lastName,
@@ -119,6 +119,12 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
             licenseNumber: data.licenseNumber,
             department: data.department,
           }
+        }
+
+        // Agregar contraseña solo si se proporcionó
+        if (data.password) {
+          updateData.password = data.password
+          updateData.confirmPassword = data.confirmPassword
         }
 
         console.log('🔄 Datos para actualización:', updateData)
@@ -293,70 +299,79 @@ export function UserForm({ user, onSuccess, onCancel }: UserFormProps) {
             </div>
           </div>
 
-          {/* Contraseña (solo para creación) */}
-          {!isEditing && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Credenciales</h3>
+          {/* Contraseña */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">
+              {isEditing ? 'Cambiar Contraseña (Opcional)' : 'Credenciales'}
+            </h3>
+            {isEditing && (
+              <p className="text-sm text-gray-600">
+                Deja estos campos vacíos si no deseas cambiar la contraseña
+              </p>
+            )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="password">Contraseña *</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      {...register('password')}
-                      placeholder="Mínimo 8 caracteres"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  {errors.password && (
-                    <p className="text-sm text-red-600">{errors.password.message}</p>
-                  )}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="password">
+                  Contraseña {!isEditing && '*'}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? 'text' : 'password'}
+                    {...register('password')}
+                    placeholder="Mínimo 8 caracteres"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-red-600">{errors.password.message}</p>
+                )}
+              </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirmar Contraseña *</Label>
-                  <div className="relative">
-                    <Input
-                      id="confirmPassword"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      {...register('confirmPassword')}
-                      placeholder="Repita la contraseña"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                  {errors.confirmPassword && (
-                    <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
-                  )}
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">
+                  Confirmar Contraseña {!isEditing && '*'}
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    {...register('confirmPassword')}
+                    placeholder="Repita la contraseña"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-red-600">{errors.confirmPassword.message}</p>
+                )}
               </div>
             </div>
-          )}
+          </div>
 
           {/* Información Adicional */}
           <div className="space-y-4">

@@ -63,9 +63,10 @@ export async function GET(
       filters.medico = currentUser.userId
     }
 
+    // 🔧 CORRECCIÓN 1: Agregar casting explícito aquí
     const historia = await HistoriaClinica.findOne(filters)
       .populate('medico', 'firstName lastName profile.speciality')
-      .lean()
+      .lean() as IHistoriaClinicaResponse | null
 
     if (!historia) {
       return NextResponse.json({
@@ -77,7 +78,7 @@ export async function GET(
     const successResponse: SuccessResponse = {
       success: true,
       message: 'Historia clínica obtenida correctamente',
-      historia: historia as IHistoriaClinicaResponse
+      historia: historia // Ya no necesita casting aquí porque historia ya es del tipo correcto
     }
 
     return NextResponse.json(successResponse, { status: 200 })
@@ -151,13 +152,14 @@ export async function PUT(
     const updateData = validationResult.data
 
     // 6. Actualizar historia clínica
+    // 🔧 CORRECCIÓN 2: Agregar casting explícito aquí
     const historiaActualizada = await HistoriaClinica.findByIdAndUpdate(
       params.id,
       { ...updateData, medico: currentUser.userId }, // Asegurar que el médico no cambie
       { new: true, runValidators: true }
     )
       .populate('medico', 'firstName lastName profile.speciality')
-      .lean()
+      .lean() as IHistoriaClinicaResponse | null
 
     if (!historiaActualizada) {
       return NextResponse.json({
@@ -169,7 +171,7 @@ export async function PUT(
     const successResponse: SuccessResponse = {
       success: true,
       message: 'Historia clínica actualizada correctamente',
-      historia: historiaActualizada as IHistoriaClinicaResponse
+      historia: historiaActualizada // Ya no necesita casting aquí
     }
 
     return NextResponse.json(successResponse, { status: 200 })

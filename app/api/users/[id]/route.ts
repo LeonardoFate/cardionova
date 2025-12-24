@@ -40,9 +40,12 @@ function convertUserToResponse(user: any): IUserResponse {
 // GET - Obtener usuario específico
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 0. Await params
+    const { id } = await params
+
     // 1. Verificar autenticación y permisos
     const currentUser = await getCurrentUser()
 
@@ -61,7 +64,7 @@ export async function GET(
     }
 
     // 2. Validar ID
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({
         success: false,
         message: 'ID de usuario inválido'
@@ -72,7 +75,7 @@ export async function GET(
     await dbConnect()
 
     // 4. Buscar usuario
-    const user = await User.findById(params.id, '-password')
+    const user = await User.findById(id, '-password')
 
     if (!user) {
       return NextResponse.json({
@@ -105,9 +108,12 @@ export async function GET(
 // PUT - Actualizar usuario
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 0. Await params
+    const { id } = await params
+
     // 1. Verificar autenticación y permisos
     const currentUser = await getCurrentUser()
 
@@ -126,7 +132,7 @@ export async function PUT(
     }
 
     // 2. Validar ID
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({
         success: false,
         message: 'ID de usuario inválido'
@@ -137,7 +143,7 @@ export async function PUT(
     await dbConnect()
 
     // 4. Verificar que el usuario existe
-    const existingUser = await User.findById(params.id)
+    const existingUser = await User.findById(id)
 
     if (!existingUser) {
       return NextResponse.json({
@@ -162,7 +168,7 @@ export async function PUT(
     if (updateData.email && updateData.email !== existingUser.email) {
       const emailExists = await User.findOne({
         email: updateData.email,
-        _id: { $ne: params.id }
+        _id: { $ne: id }
       })
 
       if (emailExists) {
@@ -192,17 +198,29 @@ export async function PUT(
       }
     }
 
-    // 8. Actualizar usuario
+    // 8. Si se proporciona una nueva contraseña, actualizarla
+    if (updateData.password) {
+      existingUser.password = updateData.password
+      await existingUser.save() // Esto activará el pre-save hook para hashear la contraseña
+    }
+
+    // 9. Actualizar otros campos del usuario
+    const fieldsToUpdate: any = {
+      ...updateData,
+      profile: { ...existingUser.profile, ...updateData.profile }
+    }
+
+    // Eliminar password y confirmPassword del objeto de actualización ya que se maneja por separado
+    delete fieldsToUpdate.password
+    delete fieldsToUpdate.confirmPassword
+
     const updatedUser = await User.findByIdAndUpdate(
-      params.id,
-      {
-        ...updateData,
-        profile: { ...existingUser.profile, ...updateData.profile }
-      },
+      id,
+      fieldsToUpdate,
       { new: true, runValidators: true }
     ).select('-password')
 
-    // 9. Verificar que la actualización fue exitosa
+    // 10. Verificar que la actualización fue exitosa
     if (!updatedUser) {
       return NextResponse.json({
         success: false,
@@ -210,7 +228,7 @@ export async function PUT(
       }, { status: 500 })
     }
 
-    // 10. Formatear respuesta usando la función auxiliar
+    // 11. Formatear respuesta usando la función auxiliar
     const userResponse = convertUserToResponse(updatedUser)
 
     const successResponse: SuccessResponse = {
@@ -234,9 +252,12 @@ export async function PUT(
 // DELETE - Desactivar usuario (soft delete)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // 0. Await params
+    const { id } = await params
+
     // 1. Verificar autenticación y permisos
     const currentUser = await getCurrentUser()
 
@@ -255,7 +276,7 @@ export async function DELETE(
     }
 
     // 2. Validar ID
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json({
         success: false,
         message: 'ID de usuario inválido'
@@ -263,7 +284,7 @@ export async function DELETE(
     }
 
     // 3. Evitar que el admin se desactive a sí mismo
-    if (params.id === currentUser.userId) {
+    if (id === currentUser.userId) {
       return NextResponse.json({
         success: false,
         message: 'No puedes desactivar tu propia cuenta'
@@ -275,7 +296,7 @@ export async function DELETE(
 
     // 5. Desactivar usuario (soft delete)
     const updatedUser = await User.findByIdAndUpdate(
-      params.id,
+      id,
       { isActive: false },
       { new: true }
     ).select('-password')

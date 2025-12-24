@@ -97,9 +97,29 @@ export const createUserSchema = userBaseSchema.extend({
   path: ['confirmPassword']
 })
 
-// Esquema para actualizar usuario (sin contraseña)
+// Esquema para actualizar usuario (con contraseña opcional)
 export const updateUserSchema = userBaseSchema.partial().extend({
+  password: z
+    .string()
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      'La contraseña debe tener al menos: 1 minúscula, 1 mayúscula, 1 número y 1 caracter especial')
+    .optional(),
+
+  confirmPassword: z
+    .string()
+    .optional(),
+
   profile: userProfileSchema.optional()
+}).refine((data) => {
+  // Solo validar coincidencia de contraseñas si se proporciona una
+  if (data.password || data.confirmPassword) {
+    return data.password === data.confirmPassword
+  }
+  return true
+}, {
+  message: 'Las contraseñas no coinciden',
+  path: ['confirmPassword']
 })
 
 // Esquema para actualizar perfil propio

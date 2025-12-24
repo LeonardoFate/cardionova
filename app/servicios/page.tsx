@@ -23,7 +23,6 @@ export default function ServiciosPage() {
         "Plan de tratamiento personalizado",
         "Seguimiento continuo de su progreso",
       ],
-      price: "Desde $150",
     },
     {
       title: "Electrocardiograma",
@@ -37,7 +36,7 @@ export default function ServiciosPage() {
         "Detección temprana de problemas cardíacos",
         "Interpretación por especialistas certificados",
       ],
-      price: "Desde $80",
+
     },
     {
       title: "Ecocardiograma",
@@ -50,7 +49,7 @@ export default function ServiciosPage() {
         "Procedimiento no invasivo y sin radiación",
         "Imágenes de alta resolución para diagnósticos precisos",
       ],
-      price: "Desde $200",
+
     },
   ]
 
@@ -67,7 +66,7 @@ export default function ServiciosPage() {
       description:
         "Monitoreo continuo del ritmo cardíaco durante 24-48 horas para detectar arritmias y evaluar síntomas.",
       icon: <FileText className="h-10 w-10 text-cardionova-red" />,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/assets/holter.png",
     },
     {
       title: "Monitoreo Ambulatorio de Presión Arterial",

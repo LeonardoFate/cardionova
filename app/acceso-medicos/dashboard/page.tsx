@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { LogOut, User, Calendar, FileText, Users, BarChart3, Stethoscope, ClipboardList } from 'lucide-react'
+import { LogOut, User, Calendar, FileText, Users, BarChart3, Stethoscope, ClipboardList, Activity } from 'lucide-react'
 
 export default function DashboardPage() {
   const { user, isLoading, isAuthenticated, logout } = useAuth()
@@ -183,6 +183,22 @@ export default function DashboardPage() {
                   </Link>
                 </CardContent>
               </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Activity className="h-4 w-4" />
+                    <span>Estudios</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Gestionar estudios y procedimientos cardiológicos.
+                  </p>
+                  <Link href="/acceso-medicos/dashboard/estudios">
+                    <Button className="w-full">Ver Estudios</Button>
+                  </Link>
+                </CardContent>
+              </Card>
             </>
           )}
 
@@ -191,29 +207,19 @@ export default function DashboardPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>Gestión de Citas</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Programar, modificar y cancelar citas de pacientes.
-                  </p>
-                  <Button className="w-full">Gestionar Citas</Button>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
                     <Users className="h-4 w-4" />
-                    <span>Pacientes</span>
+                    <span>Gestión de Pacientes</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
-                    Administrar información de pacientes.
+                    Registrar nuevos pacientes y asignarlos a médicos.
                   </p>
-                  <Button className="w-full" variant="outline">Ver Pacientes</Button>
+                  <Link href="/acceso-medicos/dashboard/pacientes">
+                    <Button className="w-full bg-cardionova-red hover:bg-cardionova-darkred">
+                      Gestionar Pacientes
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
               <Card>
@@ -232,6 +238,22 @@ export default function DashboardPage() {
                   </Link>
                 </CardContent>
               </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Activity className="h-4 w-4" />
+                    <span>Estudios</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Ver estudios cardiológicos de pacientes (solo lectura).
+                  </p>
+                  <Link href="/acceso-medicos/dashboard/estudios">
+                    <Button className="w-full" variant="outline">Ver Estudios</Button>
+                  </Link>
+                </CardContent>
+              </Card>
             </>
           )}
 
@@ -241,14 +263,18 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
-                    <span>Mis Citas</span>
+                    <span>Pacientes en Espera</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
-                    Ver y gestionar sus citas programadas.
+                    Ver pacientes asignados que esperan consulta.
                   </p>
-                  <Button className="w-full">Ver Mis Citas</Button>
+                  <Link href="/acceso-medicos/dashboard/pacientes">
+                    <Button className="w-full bg-cardionova-red hover:bg-cardionova-darkred">
+                      Ver Pacientes en Espera
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
               <Card>
@@ -278,29 +304,55 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 mb-4">
-                    Ver lista de pacientes atendidos y sus historiales.
+                    Ver lista de pacientes asignados en espera y atendidos.
                   </p>
-                  <Button className="w-full" variant="outline">Ver Pacientes</Button>
+                  <Link href="/acceso-medicos/dashboard/pacientes">
+                    <Button className="w-full bg-cardionova-red hover:bg-cardionova-darkred">
+                      Ver Mis Pacientes
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Activity className="h-4 w-4" />
+                    <span>Estudios y Procedimientos</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-600 mb-4">
+                    Solicitar y gestionar estudios cardiológicos de pacientes.
+                  </p>
+                  <Link href="/acceso-medicos/dashboard/estudios">
+                    <Button className="w-full bg-cardionova-red hover:bg-cardionova-darkred">
+                      Gestionar Estudios
+                    </Button>
+                  </Link>
                 </CardContent>
               </Card>
             </>
           )}
 
-          {/* Card común para todos los roles */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-4 w-4" />
-                <span>Mi Perfil</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 mb-4">
-                Actualizar información personal y configuración.
-              </p>
-              <Button className="w-full" variant="outline">Editar Perfil</Button>
-            </CardContent>
-          </Card>
+          {/* Card de perfil solo para ADMIN */}
+          {user.role === 'ADMIN' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <User className="h-4 w-4" />
+                  <span>Mi Perfil</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  Actualizar información personal y configuración.
+                </p>
+                <Link href="/acceso-medicos/dashboard/perfil">
+                  <Button className="w-full" variant="outline">Editar Perfil</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Información adicional para médicos */}

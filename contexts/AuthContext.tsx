@@ -13,6 +13,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>
   logout: () => Promise<void>
   checkAuth: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 // Crear el contexto
@@ -138,6 +139,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuth()
   }, [])
 
+  // Función para refrescar datos del usuario
+  const refreshUser = async () => {
+    await checkAuth()
+  }
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -145,6 +151,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     login,
     logout,
     checkAuth,
+    refreshUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

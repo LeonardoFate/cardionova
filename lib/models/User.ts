@@ -16,9 +16,10 @@ const UserSchema = new Schema<IUserDocument>(
     email: {
       type: String,
       required: [true, 'El email es requerido'],
-      unique: true,
+      unique: true, // ✅ Solo esto - unique ya crea el índice automáticamente
       lowercase: true,
       trim: true,
+      // ❌ Removido: index: true (causaba duplicado)
       match: [
         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
         'Por favor ingrese un email válido'
@@ -108,10 +109,11 @@ const UserSchema = new Schema<IUserDocument>(
   }
 )
 
-// Índices para mejorar performance
-UserSchema.index({ email: 1 })
+// ✅ Índices para mejorar performance (sin duplicar email)
+// ❌ Removido: UserSchema.index({ email: 1 }) - ya está cubierto por unique: true
 UserSchema.index({ role: 1 })
 UserSchema.index({ isActive: 1 })
+UserSchema.index({ role: 1, isActive: 1 }) // Índice compuesto para consultas combinadas
 
 // Middleware pre-save para hash de contraseña
 UserSchema.pre('save', async function(next) {
@@ -127,7 +129,7 @@ UserSchema.pre('save', async function(next) {
     this.password = await bcrypt.hash(this.password, saltRounds)
     next()
   } catch (error) {
-    next(error as Error)
+    next(error)
   }
 })
 

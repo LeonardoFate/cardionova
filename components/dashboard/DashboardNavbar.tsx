@@ -131,11 +131,17 @@ export function DashboardNavbar() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Mi Perfil</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              {user.role === 'ADMIN' && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href="/acceso-medicos/dashboard/perfil" className="cursor-pointer">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Mi Perfil</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              )}
               <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Cerrar Sesión</span>

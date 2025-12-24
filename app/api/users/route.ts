@@ -62,10 +62,12 @@ export async function GET(request: NextRequest) {
       }, { status: 401 })
     }
 
-    if (currentUser.role !== 'ADMIN') {
+    // Permitir a admin y secretarias ver usuarios
+    // Las secretarias solo pueden ver médicos (controlado por filtros más adelante)
+    if (currentUser.role !== 'ADMIN' && currentUser.role !== 'SECRETARIA') {
       return NextResponse.json({
         success: false,
-        message: 'Acceso denegado. Solo administradores pueden ver usuarios.'
+        message: 'Acceso denegado. Solo administradores y secretarias pueden ver usuarios.'
       }, { status: 403 })
     }
 
@@ -102,7 +104,10 @@ export async function GET(request: NextRequest) {
     // 4. Construir filtros de búsqueda
     const filters: any = {}
 
-    if (role) {
+    // Si es secretaria, solo puede ver médicos
+    if (currentUser.role === 'SECRETARIA') {
+      filters.role = 'MEDICO'
+    } else if (role) {
       filters.role = role
     }
 

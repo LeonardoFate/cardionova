@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
       }, { status: 401 })
     }
 
-    // Solo médicos y admins pueden ver historias clínicas
-    if (currentUser.role !== 'MEDICO' && currentUser.role !== 'ADMIN') {
+    // Solo médicos, secretarias y admins pueden ver historias clínicas
+    if (currentUser.role !== 'MEDICO' && currentUser.role !== 'ADMIN' && currentUser.role !== 'SECRETARIA') {
       return NextResponse.json({
         success: false,
         message: 'Acceso denegado'
@@ -119,7 +119,7 @@ export async function GET(request: NextRequest) {
     const successResponse: GetHistoriasSuccessResponse = {
       success: true,
       message: 'Historias clínicas obtenidas correctamente',
-      historias: historias as IHistoriaClinicaResponse[],
+      historias: historias as unknown as IHistoriaClinicaResponse[],
       pagination: {
         page,
         limit,
@@ -191,7 +191,7 @@ export async function POST(request: NextRequest) {
     const successResponse: CreateHistoriaSuccessResponse = {
       success: true,
       message: 'Historia clínica creada exitosamente',
-      historia: historiaCompleta as IHistoriaClinicaResponse
+      historia: historiaCompleta as unknown as IHistoriaClinicaResponse
     }
 
     return NextResponse.json(successResponse, { status: 201 })

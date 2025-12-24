@@ -112,11 +112,12 @@ type HistoriaFormData = z.infer<typeof historiaFormSchema>
 
 interface HistoriaClinicaFormProps {
   historia?: IHistoriaClinicaResponse
+  paciente?: any // IPacienteResponse from pacientes
   onSuccess: (historia: IHistoriaClinicaResponse) => void
   onCancel: () => void
 }
 
-export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaClinicaFormProps) {
+export function HistoriaClinicaForm({ historia, paciente, onSuccess, onCancel }: HistoriaClinicaFormProps) {
   const [showCalculadoraIMC, setShowCalculadoraIMC] = useState(false)
   const [newMedicamento, setNewMedicamento] = useState('')
   const [newMedicacionHabitual, setNewMedicacionHabitual] = useState('')
@@ -125,20 +126,20 @@ export function HistoriaClinicaForm({ historia, onSuccess, onCancel }: HistoriaC
 
   const isEditing = !!historia
 
-  // ✅ VALORES POR DEFECTO ACTUALIZADOS
+  // ✅ VALORES POR DEFECTO ACTUALIZADOS (con soporte para paciente pre-cargado)
   const form = useForm<HistoriaFormData>({
     resolver: zodResolver(historiaFormSchema),
     defaultValues: {
       paciente: {
-        nombre: historia?.paciente.nombre || '',
-        cedula: historia?.paciente.cedula || '',
-        tipoSeguro: historia?.paciente.tipoSeguro || ''
+        nombre: historia?.paciente.nombre || (paciente ? `${paciente.nombre} ${paciente.apellido}` : ''),
+        cedula: historia?.paciente.cedula || paciente?.cedula || '',
+        tipoSeguro: historia?.paciente.tipoSeguro || paciente?.tipoSeguro || ''
       },
       fecha: historia?.fecha
         ? new Date(historia.fecha).toISOString().split('T')[0]
         : new Date().toISOString().split('T')[0],
       datosBiometricos: {
-        edad: historia?.datosBiometricos.edad || 0,
+        edad: historia?.datosBiometricos.edad || paciente?.edad || 0,
         peso: historia?.datosBiometricos.peso || 0,
         estatura: historia?.datosBiometricos.estatura || 0
       },
