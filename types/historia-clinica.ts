@@ -1,5 +1,7 @@
 // types/historia-clinica.ts - VERSIÓN ACTUALIZADA
 
+import { IOrdenesMedicas } from './orden-medica'
+
 export interface IPaciente {
   nombre: string
   cedula: string
@@ -97,6 +99,9 @@ export interface IHistoriaClinica {
   plan: IPlan
   tratamiento: ITratamiento
   medico: string
+
+  // Órdenes médicas (opcional, se agrega después de la consulta)
+  ordenesMedicas?: IOrdenesMedicas
 }
 
 // ✅ NUEVAS CONSTANTES

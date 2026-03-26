@@ -39,15 +39,15 @@ const historiaFormSchema = z.object({
   }),
   fecha: z.string().min(1, 'Fecha requerida'),
   datosBiometricos: z.object({
-    edad: z.number().min(1, 'Edad requerida'),
-    peso: z.number().min(1, 'Peso requerido'),
-    estatura: z.number().min(1, 'Estatura requerida')
+    edad: z.number().min(0, 'La edad no puede ser negativa').max(150, 'La edad no puede ser mayor a 150'),
+    peso: z.number().min(1, 'El peso debe ser mayor a 1 kg').max(500, 'El peso no puede ser mayor a 500 kg'),
+    estatura: z.number().min(30, 'La estatura debe ser mayor a 30 cm').max(250, 'La estatura no puede ser mayor a 250 cm')
   }),
   signosVitales: z.object({
     presionArterial: z.string().min(1, 'Presión arterial requerida'),
-    frecuenciaCardiaca: z.number().min(30, 'Frecuencia cardíaca requerida'),
-    satO2: z.number().min(50, 'Saturación requerida'),
-    temperatura: z.number().min(30, 'Temperatura requerida')
+    frecuenciaCardiaca: z.number().min(30, 'Frecuencia cardíaca muy baja').max(220, 'Frecuencia cardíaca muy alta'),
+    satO2: z.number().min(50, 'Saturación muy baja').max(100, 'La saturación no puede ser mayor a 100%'),
+    temperatura: z.number().min(0, 'La temperatura debe ser un número positivo').max(50, 'La temperatura no puede ser mayor a 50°C')
   }),
   motivoConsulta: z.string().min(1, 'Motivo de consulta requerido'),
   cie10: z.string().min(1, 'CIE-10 requerido'),

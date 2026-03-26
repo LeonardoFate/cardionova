@@ -1,6 +1,7 @@
 // lib/db/validations/historia-clinica.ts - VERSIÓN DEBUG SIMPLIFICADA
 
 import { z } from 'zod'
+import { ordenesMedicasSchema } from './orden-medica'
 
 // ✅ SCHEMAS BÁSICOS PARA DEBUG
 const pacienteSchema = z.object({
@@ -94,7 +95,10 @@ export const createHistoriaClinicaSchema = z.object({
   examenPorSistemas: examenPorSistemasSchema,
   examenFisico: examenFisicoSchema,
   estudiosRealizados: estudiosRealizadosSchema,
-  tratamiento: tratamientoSchema
+  tratamiento: tratamientoSchema,
+
+  // Órdenes médicas (opcional)
+  ordenesMedicas: ordenesMedicasSchema.optional()
 })
 
 export const updateHistoriaClinicaSchema = createHistoriaClinicaSchema.partial()

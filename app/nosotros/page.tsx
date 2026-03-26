@@ -220,7 +220,7 @@ export default function NosotrosPage() {
           </div>
           <div className="order-1 lg:order-2 relative h-[400px] rounded-lg overflow-hidden shadow-lg">
             <Image
-              src="/placeholder.svg?height=400&width=600"
+              src="/assets/doctores/doctores-1.jpeg"
               alt="Cardionova - Centro de Cardiología"
               fill
               className="object-cover"
@@ -230,7 +230,7 @@ export default function NosotrosPage() {
       </section>
 
       {/* Nuestra Historia - Línea de tiempo */}
-      <section className="bg-gray-50 py-16">
+     {/* <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-12 text-center text-cardionova-blue">Nuestra Historia</h2>
 
@@ -251,8 +251,7 @@ export default function NosotrosPage() {
             ))}
           </div>
         </div>
-      </section>
-
+      </section>*/}
       {/* Misión y Visión */}
       <section className="py-16 container mx-auto px-4">
          <h2 className="text-3xl font-bold mb-12 text-center text-cardionova-blue">Visión y Misión</h2>

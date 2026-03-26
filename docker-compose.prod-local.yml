@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: cardionova-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: cardionova
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - cardionova-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/cardionova --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Application (usando imagen local)
+  app:
+    image: cardionova:latest
+    container_name: cardionova-app
+    restart: unless-stopped
+    ports:
+      - "80:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/cardionova
+      - JWT_SECRET=${JWT_SECRET}
+      - REFRESH_TOKEN_SECRET=${REFRESH_TOKEN_SECRET}
+      - NODE_ENV=production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - cardionova-network
+
+# Volúmenes persistentes
+volumes:
+  mongodb_data:
+    driver: local
+
+# Red interna
+networks:
+  cardionova-network:
+    driver: bridge

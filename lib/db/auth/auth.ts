@@ -9,7 +9,7 @@ export const REFRESH_COOKIE_NAME = 'cardionova-refresh-token'
 
 export const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: false, // Cambiado a false para permitir HTTP (cambiar a true cuando tengas HTTPS)
   sameSite: 'lax' as const,
   path: '/',
   maxAge: 60 * 60 * 24 * 7 // 7 días
@@ -17,7 +17,7 @@ export const COOKIE_OPTIONS = {
 
 export const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: false, // Cambiado a false para permitir HTTP (cambiar a true cuando tengas HTTPS)
   sameSite: 'lax' as const,
   path: '/',
   maxAge: 60 * 60 * 24 * 30 // 30 días

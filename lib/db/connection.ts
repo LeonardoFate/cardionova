@@ -2,13 +2,6 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
-
-const MONGODB_URI: string = process.env.MONGODB_URI!
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local')
-}
-
 // Definimos una interfaz para el objeto en caché
 interface MongooseCache {
   conn: typeof mongoose | null
@@ -29,6 +22,13 @@ if (!cached) {
 
 // Función principal de conexión
 async function dbConnect(): Promise<typeof mongoose> {
+  // Validar MONGODB_URI (se hace aquí en runtime, no en import time)
+  const MONGODB_URI = process.env.MONGODB_URI
+
+  if (!MONGODB_URI) {
+    throw new Error('Please define the MONGODB_URI environment variable inside .env.local')
+  }
+
   // Retorna la conexión en caché si existe
   if (cached.conn) {
     return cached.conn

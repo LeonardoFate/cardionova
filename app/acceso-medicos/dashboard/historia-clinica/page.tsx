@@ -2,7 +2,7 @@
 
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useAuth, isAdmin, isDoctor, isSecretary } from '@/contexts/AuthContext'
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -17,11 +17,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { AlertCircle, FileText, Stethoscope } from 'lucide-react'
+import { AlertCircle, FileText, Stethoscope, Download } from 'lucide-react'
+import { OrdenesMedicasManager } from '@/components/ordenes-medicas/OrdenesMedicasManager'
 
 type ViewMode = 'list' | 'create' | 'edit' | 'view'
 
-export default function HistoriaClinicaPage() {
+// Componente interno que usa useSearchParams
+function HistoriaClinicaPageContent() {
   const { user, isLoading, isAuthenticated } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -240,6 +242,19 @@ export default function HistoriaClinicaPage() {
   )
 }
 
+// Componente principal con Suspense boundary
+export default function HistoriaClinicaPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#1e3a8a]"></div>
+      </div>
+    }>
+      <HistoriaClinicaPageContent />
+    </Suspense>
+  )
+}
+
 // Componente para mostrar los detalles de la historia clínica (solo lectura)
 interface HistoriaClinicaDetailViewProps {
   historia: IHistoriaClinicaResponse
@@ -254,10 +269,42 @@ function HistoriaClinicaDetailView({
   onClose,
   canEdit
 }: HistoriaClinicaDetailViewProps) {
+  const handleDescargarPDF = async () => {
+    try {
+      const response = await fetch(`/api/historia-clinica/${historia._id}/pdf`)
+
+      if (!response.ok) {
+        throw new Error('Error al generar PDF')
+      }
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      const nombrePaciente = historia.paciente.nombre.replace(/\s+/g, '-')
+      const fechaConsulta = new Date(historia.fecha).toISOString().split('T')[0]
+      a.download = `HC-${nombrePaciente}-${fechaConsulta}.pdf`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error('Error descargando PDF:', error)
+      alert('Error al descargar el PDF. Por favor, intente nuevamente.')
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Botones de acción */}
       <div className="flex justify-end space-x-2">
+        <button
+          onClick={handleDescargarPDF}
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors flex items-center"
+        >
+          <Download className="mr-2 h-4 w-4" />
+          Descargar Historia Clínica (PDF)
+        </button>
         {canEdit && (
           <button
             onClick={onEdit}
@@ -421,6 +468,16 @@ function HistoriaClinicaDetailView({
           </div>
         </div>
       </div>
+
+      {/* Órdenes Médicas */}
+      <OrdenesMedicasManager
+        historia={historia}
+        onOrdenCreada={(historiaActualizada) => {
+          // Refrescar la lista cuando se cierre el dialog
+          window.location.reload()
+        }}
+        canEdit={canEdit}
+      />
 
       {/* Información del médico */}
       <div className="bg-gray-50 p-4 rounded-lg border">

@@ -304,6 +304,59 @@ const HistoriaClinicaSchema = new Schema<IHistoriaClinicaDocument>(
       }
     },
 
+    // Órdenes médicas (opcional)
+    ordenesMedicas: {
+      recetas: [{
+        numero: { type: String },
+        medicamentos: [{
+          nombre: { type: String, required: true },
+          concentracion: { type: String, required: true },
+          presentacion: { type: String, required: true },
+          cantidad: { type: String, required: true },
+          dosificacion: { type: String, required: true },
+          frecuencia: { type: String, required: true },
+          duracion: { type: String, required: true },
+          viaAdministracion: { type: String, required: true },
+          indicaciones: { type: String }
+        }],
+        observaciones: { type: String },
+        fechaEmision: { type: Date, default: Date.now },
+        vigencia: { type: String, default: '30 días' }
+      }],
+      estudios: [{
+        numero: { type: String },
+        tipo: { type: String, required: true },
+        nombre: { type: String, required: true },
+        justificacion: { type: String, required: true },
+        urgente: { type: Boolean, default: false },
+        ayunas: { type: Boolean, default: false },
+        preparacion: { type: String },
+        indicaciones: { type: String },
+        fechaEmision: { type: Date, default: Date.now }
+      }],
+      reposos: [{
+        numero: { type: String },
+        tipo: { type: String, required: true },
+        dias: { type: Number, required: true },
+        desde: { type: Date, required: true },
+        hasta: { type: Date, required: true },
+        diagnostico: { type: String, required: true },
+        recomendaciones: { type: String },
+        fechaEmision: { type: Date, default: Date.now }
+      }],
+      interconsultas: [{
+        numero: { type: String },
+        especialidad: { type: String, required: true },
+        profesionalSolicitado: { type: String },
+        motivo: { type: String, required: true },
+        antecedentes: { type: String, required: true },
+        examenesRealizados: { type: String },
+        diagnosticoPresuntivo: { type: String, required: true },
+        urgente: { type: Boolean, default: false },
+        fechaEmision: { type: Date, default: Date.now }
+      }]
+    },
+
     // Médico responsable
     medico: {
       type: Schema.Types.ObjectId,
@@ -331,6 +384,50 @@ HistoriaClinicaSchema.pre('save', function(this: IHistoriaClinicaDocument, next)
       (this.datosBiometricos.peso / (estaturaEnMetros * estaturaEnMetros)) * 100
     ) / 100
   }
+
+  // Generar números de orden automáticamente
+  if (this.ordenesMedicas) {
+    const fecha = new Date()
+    const fechaStr = fecha.toISOString().split('T')[0].replace(/-/g, '')
+    const medicoId = this.medico.toString().slice(-4)
+
+    // Generar números para recetas
+    if (this.ordenesMedicas.recetas) {
+      this.ordenesMedicas.recetas.forEach((receta: any, idx: number) => {
+        if (!receta.numero) {
+          receta.numero = `RX-${fechaStr}-${medicoId}-${(idx + 1).toString().padStart(3, '0')}`
+        }
+      })
+    }
+
+    // Generar números para estudios
+    if (this.ordenesMedicas.estudios) {
+      this.ordenesMedicas.estudios.forEach((estudio: any, idx: number) => {
+        if (!estudio.numero) {
+          estudio.numero = `EST-${fechaStr}-${medicoId}-${(idx + 1).toString().padStart(3, '0')}`
+        }
+      })
+    }
+
+    // Generar números para reposos
+    if (this.ordenesMedicas.reposos) {
+      this.ordenesMedicas.reposos.forEach((reposo: any, idx: number) => {
+        if (!reposo.numero) {
+          reposo.numero = `REP-${fechaStr}-${medicoId}-${(idx + 1).toString().padStart(3, '0')}`
+        }
+      })
+    }
+
+    // Generar números para interconsultas
+    if (this.ordenesMedicas.interconsultas) {
+      this.ordenesMedicas.interconsultas.forEach((inter: any, idx: number) => {
+        if (!inter.numero) {
+          inter.numero = `INT-${fechaStr}-${medicoId}-${(idx + 1).toString().padStart(3, '0')}`
+        }
+      })
+    }
+  }
+
   next()
 })
 

@@ -3,7 +3,7 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -28,7 +28,8 @@ import { EstudioInformeForm } from '@/components/estudios/EstudioInformeForm'
 import { EstudioPDFUpload } from '@/components/estudios/EstudioPDFUpload'
 import { NuevoEstudioForm } from '@/components/estudios/NuevoEstudioForm'
 
-export default function EstudiosPage() {
+// Componente interno que usa useSearchParams
+function EstudiosPageContent() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -354,5 +355,18 @@ export default function EstudiosPage() {
         </DialogContent>
       </Dialog>
     </div>
+  )
+}
+
+// Componente principal con Suspense boundary
+export default function EstudiosPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#1e3a8a]"></div>
+      </div>
+    }>
+      <EstudiosPageContent />
+    </Suspense>
   )
 }
